@@ -261,6 +261,7 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 /* ============ BADGES ============ */
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;border-radius:20px;padding:3px 9px;white-space:nowrap;letter-spacing:.02em}
 .badge .mi{font-size:12px}
+.badge-red{background:#EF4444;color:#fff;min-width:20px;height:20px;justify-content:center;padding:3px 6px;border-radius:20px}
 .green{background:#DCFCE7;color:#166534}
 .orange{background:#FEF3C7;color:#92400E}
 .red{background:#FEE2E2;color:#991B1B}
@@ -593,9 +594,6 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 .asist-row .name{flex:1;font-size:13px;font-weight:600;color:var(--fg)}
 .asist-row .role{font-size:10px;color:var(--fg-mut);margin-top:1px}
 
-/* ============ GPS MAP ============ */
-.gps-map{background:#e8f0e0;border-radius:14px;border:1px solid #d0e0c0;height:240px;position:relative;overflow:hidden;margin-bottom:8px}
-
 /* ============ CONFIRM CARD ============ */
 .cf-card{background:linear-gradient(135deg,#fff,#fafaf8);border:2px solid #10C97E;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(29,158,117,.12)}
 .cf-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:13px}
@@ -786,23 +784,8 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
     </div>
     <div class="signin-center">
       <div class="signin-greeting">¿Quién va a entrar?</div>
-      <div class="signin-users">
-        <div class="signin-user" onclick="seleccionarCapataz('gabriel')">
-          <div class="signin-avatar gabriel" style="position:relative">
-            GC
-            <div class="signin-lock" id="lock-gc"><i class="mi">lock</i></div>
-          </div>
-          <div class="signin-name">Gabriel Chavarría</div>
-          <div class="signin-role">Capataz 1</div>
-        </div>
-        <div class="signin-user" onclick="seleccionarCapataz('julio')">
-          <div class="signin-avatar julio" style="position:relative">
-            JC
-            <div class="signin-lock" id="lock-jc"><i class="mi">lock</i></div>
-          </div>
-          <div class="signin-name">Julio Chavarría</div>
-          <div class="signin-role">Capataz 2</div>
-        </div>
+      <div class="signin-users" id="signin-users">
+        <!-- Se rellena dinámicamente con los usuarios de tablet (renderSigninUsers) -->
       </div>
     </div>
     <div class="signin-bottom">
@@ -854,8 +837,8 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 
       <div class="section-label">Gestión de usuarios</div>
       <div class="card">
-        <div class="card-row clickable" onclick="openSheet('tech-reset-passwords')"><div class="ico" style="background:#DBEAFE"><i class="mi">key</i></div><div style="flex:1"><div class="label">Resetear contraseñas</div><div class="sub">Capataces y conductor</div></div><span style="color:#bbb">›</span></div>
-        <div class="card-row clickable" onclick="openSheet('tech-editar-capataces')"><div class="ico" style="background:#DCFCE7"><i class="mi">badge</i></div><div style="flex:1"><div class="label">Editar capataces y conductor</div><div class="sub">Nombre, cédula, datos</div></div><span style="color:#bbb">›</span></div>
+        <div class="card-row clickable" onclick="openSheet('tech-reset-passwords')"><div class="ico" style="background:#DBEAFE"><i class="mi">key</i></div><div style="flex:1"><div class="label">Resetear contraseñas</div><div class="sub">Jefes de campo y conductor</div></div><span style="color:#bbb">›</span></div>
+        <div class="card-row clickable" onclick="openSheet('tech-editar-jefes de campo')"><div class="ico" style="background:#DCFCE7"><i class="mi">badge</i></div><div style="flex:1"><div class="label">Editar jefes de campo y conductor</div><div class="sub">Nombre, cédula, datos</div></div><span style="color:#bbb">›</span></div>
         <div class="card-row clickable" onclick="openSheet('tech-trabajadores')"><div class="ico" style="background:#EDE9FE"><i class="mi">group</i></div><div style="flex:1"><div class="label">Gestión de trabajadores</div><div class="sub" id="tech-trab-count">30 trabajadores</div></div><span style="color:#bbb">›</span></div>
       </div>
 
@@ -873,6 +856,11 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
         <div class="card-row clickable" onclick="openSheet('tech-tractores')"><div class="ico" style="background:#FEF3C7"><i class="mi">agriculture</i></div><div style="flex:1"><div class="label">Tractores</div><div class="sub" id="tech-trac-count">3 tractores</div></div><span style="color:#bbb">›</span></div>
         <div class="card-row clickable" onclick="openSheet('tech-carretas')"><div class="ico" style="background:#DBEAFE"><i class="mi">inventory_2</i></div><div style="flex:1"><div class="label">Carretas</div><div class="sub" id="tech-carr-count">6 carretas</div></div><span style="color:#bbb">›</span></div>
         <div class="card-row clickable" onclick="openSheet('tech-chapeadoras')"><div class="ico" style="background:#DCFCE7"><i class="mi">settings</i></div><div style="flex:1"><div class="label">Chapeadoras</div><div class="sub" id="tech-chap-count">2 chapeadoras</div></div><span style="color:#bbb">›</span></div>
+      </div>
+
+      <div class="section-label">Recuperación</div>
+      <div class="card">
+        <div class="card-row clickable" onclick="abrirPapeleraTablet()"><div class="ico" style="background:#FEF3C7"><i class="mi">restore_from_trash</i></div><div style="flex:1"><div class="label">Papelera de recuperación</div><div class="sub" id="tech-papelera-count">Restaurar elementos borrados</div></div><span style="color:#bbb">›</span></div>
       </div>
 
       <div class="section-label"><i class="mi">tune</i>️ Configuración avanzada</div>
@@ -919,7 +907,7 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
         <div id="header-avatar" onclick="openSheet('cap-foto-perfil')" style="width:46px;height:46px;border-radius:50%;background:#DCFCE7;color:#166534;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;border:2px solid rgba(255,255,255,.4);box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;overflow:hidden">GC</div>
         <div>
           <div style="color:#fff;font-size:17px;font-weight:700" id="m-sal">Hola, Gabriel</div>
-          <div style="color:#9FE1CB;font-size:11px;margin-top:2px" id="m-cargo">Capataz 1 · Finca Las Palmas</div>
+          <div style="color:#9FE1CB;font-size:11px;margin-top:2px" id="m-cargo">Jefe de campo 1 · Finca Las Palmas</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
@@ -937,23 +925,10 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
   <div class="pad">
     <div id="alertas-zone"></div>
 
-    <div style="position:relative;margin-bottom:12px">
-      <div class="search-box" style="margin-bottom:0">
-        <i class="mi">search</i>
-        <input type="text" id="menu-buscar" placeholder="Buscar módulo... (asistencia, tareas, coyoles)" autocomplete="off"
-          oninput="filtrarMenu(this.value)"
-          onfocus="filtrarMenu(this.value)"
-          onblur="setTimeout(()=>{const d=document.getElementById('menu-sug');if(d)d.style.display='none'},200)">
-        <button id="menu-buscar-x" onclick="document.getElementById('menu-buscar').value='';filtrarMenu('')" style="display:none;background:transparent;border:none;color:var(--fg-mut);cursor:pointer;padding:0 4px"><i class="mi">close</i></button>
-      </div>
-      <div id="menu-sug" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-card);border:1px solid var(--separator);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-height:280px;overflow-y:auto;z-index:50;margin-top:4px"></div>
-    </div>
-
     <div class="section-label" id="mod-label">Módulos</div>
     <div class="grid2" id="mod-grid"></div>
-    <div id="mod-sin-result" style="display:none;text-align:center;padding:24px;color:var(--fg-mut);font-size:13px"><i class="mi" style="font-size:32px;color:#cbd5e1">search_off</i><div style="margin-top:6px">Sin resultados</div></div>
 
-    <div style="text-align:center;margin-top:16px;font-size:10px;color:#bbb">v2.0.0 · <span style="color:#10C97E">●</span> Firebase sincronizado</div>
+    <div style="text-align:center;margin-top:16px;font-size:10px;color:#bbb">v2.1.0 · <span style="color:#10C97E">●</span> Firebase sincronizado</div>
   </div>
   </div>
 </div>
@@ -974,6 +949,7 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
     <div class="seg">
       <button class="on" id="as-tab-hoy" onclick="swAsistTab('hoy')">Hoy</button>
       <button id="as-tab-quincena" onclick="swAsistTab('quincena')">Quincena</button>
+      <button id="as-tab-stats" onclick="swAsistTab('stats')">Inasistencias</button>
     </div>
   </div>
   <div class="body">
@@ -1044,6 +1020,18 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
     <!-- ─── TAB: SEMANA / QUINCENA ─── -->
     <div id="as-pant-quincena" style="display:none">
       <div class="pad" id="as-quincena-cont"></div>
+    </div>
+
+    <!-- ─── TAB: INASISTENCIAS (estadísticas) ─── -->
+    <div id="as-pant-stats" style="display:none">
+      <div style="background:var(--bg-card);border-bottom:1px solid var(--separator);padding:8px 14px">
+        <div class="seg">
+          <button class="on" id="ina-r-qui" onclick="setRangoInasist('qui')">Quincena</button>
+          <button id="ina-r-mes" onclick="setRangoInasist('mes')">Mes</button>
+          <button id="ina-r-ano" onclick="setRangoInasist('ano')">Año</button>
+        </div>
+      </div>
+      <div class="pad" id="as-stats-cont"></div>
     </div>
 
   </div>
@@ -1303,6 +1291,45 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 </div>
 
 <!-- ═══════════════════════════════════════════ PERSONAL ═══════════════════════════════════════════ -->
+<div id="scr-comprobantes" class="scr">
+  <div class="top">
+    <div class="top-row">
+      <button class="ibtn" onclick="goBack()">←</button>
+      <div style="flex:1"><h1>Comprobantes</h1><p id="comp-sub">Recibos de pago</p></div>
+      <button class="ibtn" onclick="go('menu')"><i class="mi">home</i></button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="pad" id="comp-cont"></div>
+  </div>
+</div>
+
+<div id="scr-fichas" class="scr">
+  <div class="top">
+    <div class="top-row">
+      <button class="ibtn" onclick="goBack()">←</button>
+      <div style="flex:1"><h1>Fichas de Seguro</h1><p id="fichas-sub">Fichas de Seguro Social</p></div>
+      <button class="ibtn" onclick="go('menu')"><i class="mi">home</i></button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="pad" id="fichas-cont"></div>
+  </div>
+</div>
+
+<div id="scr-liquidaciones" class="scr">
+  <div class="top">
+    <div class="top-row">
+      <button class="ibtn" onclick="goBack()">←</button>
+      <div style="flex:1"><h1>Documentos</h1><p id="liq-sub">Contratos · liquidaciones</p></div>
+      <button class="ibtn" onclick="go('menu')"><i class="mi">home</i></button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="pad" id="liq-cont"></div>
+  </div>
+</div>
+
 <div id="scr-personal" class="scr">
   <div class="top">
     <div class="top-row">
@@ -1326,8 +1353,9 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
         <div class="stat-box lt"><div class="stat-n" style="color:#991B1B">0</div><div class="stat-l">Inactivo</div></div>
       </div>
       <div id="personal-acciones"></div>
-      <div class="section-label" style="margin-top:0">Capataces</div>
-      <div class="card" id="capataces-list"></div>
+      <div id="solicitudes-aviso"></div>
+      <div class="section-label" style="margin-top:0">Jefes de campo</div>
+      <div class="card" id="jefes de campo-list"></div>
       <div class="section-label">Conductor</div>
       <div class="card" id="conductor-list"></div>
       <div class="section-label">Trabajadores</div>
@@ -1654,8 +1682,8 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
       <button onclick="colgarLlamada()" style="width:68px;height:68px;border-radius:50%;background:#EF4444;color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,.5);transition:transform .15s"><i class="mi" style="font-size:30px;color:#fff;transform:rotate(135deg)">call</i></button>
     </div>
     <div id="llam-botones-entrante" style="display:none;justify-content:center;gap:60px">
-      <button onclick="rechazarLlamada()" style="width:68px;height:68px;border-radius:50%;background:#EF4444;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,.5)"><i class="mi" style="font-size:30px;color:#fff;transform:rotate(135deg)">call</i></button>
-      <button onclick="aceptarLlamada()" style="width:68px;height:68px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(16,201,126,.5);animation:llamPulse 1.5s ease-in-out infinite"><i class="mi" style="font-size:30px;color:#fff">call</i></button>
+      <button onclick="rechazarLlamadaEntrante()" style="width:68px;height:68px;border-radius:50%;background:#EF4444;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,.5)"><i class="mi" style="font-size:30px;color:#fff;transform:rotate(135deg)">call</i></button>
+      <button onclick="aceptarLlamadaEntrante()" style="width:68px;height:68px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 8px 24px rgba(16,201,126,.5);animation:llamPulse 1.5s ease-in-out infinite"><i class="mi" style="font-size:30px;color:#fff">call</i></button>
     </div>
     <div id="llam-etiquetas-entrante" style="display:none;justify-content:center;gap:60px;margin-top:10px">
       <div style="width:68px;text-align:center;font-size:11px;color:rgba(255,255,255,.7);font-weight:600">Rechazar</div>
@@ -1699,6 +1727,23 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 </div>
 
 <!-- ═══════════════════════════════════════════ ESTADÍSTICAS ═══════════════════════════════════════════ -->
+<div id="scr-incapacidades" class="scr">
+  <div class="top">
+    <div class="top-row">
+      <button class="ibtn" onclick="goBack()">←</button>
+      <div style="flex:1"><h1>Incapacidades</h1><p>Escanear y enviar a la oficina</p></div>
+      <button class="ibtn" onclick="go('menu')"><i class="mi">home</i></button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="pad">
+      <button class="btn btn-green" style="margin-bottom:14px" onclick="openSheet('nueva-incapacidad')"><i class="mi sm">add_a_photo</i> Registrar incapacidad</button>
+      <div class="section-label" style="margin-top:0">Incapacidades registradas</div>
+      <div id="incap-list"></div>
+    </div>
+  </div>
+</div>
+
 <div id="scr-estadisticas" class="scr">
   <div class="top">
     <div class="top-row">
@@ -1781,7 +1826,7 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
   <div class="top">
     <div class="top-row">
       <button class="ibtn" onclick="goBack()">←</button>
-      <div style="flex:1"><h1>Configuración</h1><p id="cfg-u">Gabriel Chavarría · Capataz 1</p></div>
+      <div style="flex:1"><h1>Configuración</h1><p id="cfg-u">Gabriel Chavarría · Jefe de campo 1</p></div>
       <button class="ibtn" onclick="go('menu')"><i class="mi">home</i></button>
     </div>
   </div>
@@ -1854,7 +1899,7 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 
     <div class="section-label">Acerca de</div>
     <div class="card">
-      <div class="card-row clickable" onclick="openSheet('acerca-version')"><div class="ico" style="background:#DCFCE7;font-size:14px"><i class="mi">info</i></div><div style="flex:1"><div class="label">Versión v2.0.0</div><div class="sub">Agropecuaria Chiriquí, S.A.</div></div><span style="color:#bbb">›</span></div>
+      <div class="card-row clickable" onclick="openSheet('acerca-version')"><div class="ico" style="background:#DCFCE7;font-size:14px"><i class="mi">info</i></div><div style="flex:1"><div class="label">Versión v2.1.0</div><div class="sub">Agropecuaria Chiriquí, S.A.</div></div><span style="color:#bbb">›</span></div>
       <div class="card-row clickable" style="display:none" onclick="openSheet('politica-privacidad')"><div class="ico" style="background:#F1F5F9;font-size:14px"><i class="mi">shield</i></div><div style="flex:1"><div class="label">Política de privacidad</div></div><span style="color:#bbb">›</span></div>
       <div class="card-row clickable" onclick="openSheet('soporte')"><div class="ico" style="background:#F1F5F9;font-size:14px"><i class="mi">help</i></div><div style="flex:1"><div class="label">Soporte técnico</div><div class="sub">Kaes Security System</div></div><span style="color:#bbb">›</span></div>
     </div>
@@ -1876,6 +1921,55 @@ html[data-theme="dark"] .msg-fecha{background:rgba(255,255,255,.1);color:#a0a0a0
 </div>
 
 <script>
+/* ══════════════════════════════════════════════════════════════════
+   CAPA DE DATOS CENTRAL (DB)
+   ──────────────────────────────────────────────────────────────────
+   Todas las lecturas/escrituras pasan por aquí. Hoy usa el almacenamiento
+   local del navegador (window.storage) para demostración.
+
+   👉 PARA PRODUCCIÓN (que un jefe entre con su usuario/contraseña desde
+      CUALQUIER tablet y vea sus datos): reemplazar el contenido de estas
+      funciones para apuntar a Firebase o al servidor propio. El resto de
+      la app NO cambia. Ver la "Guía de Migración a Producción".
+   ══════════════════════════════════════════════════════════════════ */
+const DB = {
+  async get(clave){
+    if(typeof window!=='undefined' && window.storage){
+      const r = await window.storage.get(clave, true);
+      return (r && r.value) ? r.value : null;
+    }
+    return null;
+  },
+  async set(clave, valor){
+    if(typeof window!=='undefined' && window.storage){
+      await window.storage.set(clave, valor, true);
+      return true;
+    }
+    return false;
+  },
+  async del(clave){
+    if(typeof window!=='undefined' && window.storage){
+      await window.storage.delete(clave, true);
+      return true;
+    }
+    return false;
+  },
+  // Datos privados de ESTA tablet (no se comparten): sesión, preferencias locales
+  async getLocal(clave){
+    if(typeof window!=='undefined' && window.storage){
+      const r = await window.storage.get(clave, false);
+      return (r && r.value) ? r.value : null;
+    }
+    return null;
+  },
+  async setLocal(clave, valor){
+    if(typeof window!=='undefined' && window.storage){
+      await window.storage.set(clave, valor, false);
+      return true;
+    }
+    return false;
+  }
+};
 /* ═══════════════════════════════════════════ ESTADO GLOBAL ═══════════════════════════════════════════ */
 const STATE={
   user:{id:null,nombre:'',iniciales:'',cargo:''},
@@ -1891,7 +1985,7 @@ const STATE={
     nombre:'Erick · Kaes Security'
   },
 
-  // Contraseñas de capataces — cada uno con su tipo + valor
+  // Contraseñas de jefes de campo — cada uno con su tipo + valor
   // tipo: 'texto' | 'pin' | 'patron' | null (no configurado)
   // valor: string (texto), '1234' (pin), '1-2-5-8-9' (patrón secuencia)
   passwords:{
@@ -1901,7 +1995,7 @@ const STATE={
 
   // Conductores externos (no en planilla) - Kenneth presta servicios profesionales
   // Habitual: Kenneth Camarena (siempre disponible como opción default en transporte)
-  // Aquí se guardan reemplazos o eventuales que el capataz registre
+  // Aquí se guardan reemplazos o eventuales que el jefe de campo registre
   conductoresExternos:[],
 
   // Asistencia diaria
@@ -1925,7 +2019,7 @@ const STATE={
     empresa:{
       nombre:'Agropecuaria Chiriquí, S.A.',
       slogan:'Sistema de gestión de finca',
-      version:'v2.0.0',
+      version:'v2.1.0',
       logoEmoji:'<i class="mi">forest</i>',
       ruc:'1201236-1-582168 DV72',
       email:'agrochi@hotmail.com',
@@ -1970,7 +2064,7 @@ const STATE={
       almuerzoFin:'13:00'
     },
     // Cargos disponibles para colaboradores
-    cargos:['Cosechador','Fumigador','Podador','Tractorista','Chapero','Peón general','Capataz','Conductor','Fertilizador','Vigilante'],
+    cargos:['Jornalero','Cosechador','Fumigador','Podador','Tractorista','Chapero','Peón general','Ayudante general','Jefe de campo','Conductor','Fertilizador','Vigilante'],
     // Niveles mínimos de inventario (editable)
     nivelesMinimos:{
       diesel:100,
@@ -2034,8 +2128,8 @@ const STATE={
   },
 
   colaboradores:[
-    {id:'gc',codigo:'001',nombre:'Gabriel Chavarría',ini:'GC',cedula:'4-226-45',cargo:'Capataz 1',parcela:'P-04, P-07, P-11',color:'#DCFCE7',colorT:'#166534',estado:'campo',gps:true},
-    {id:'jc',codigo:'002',nombre:'Julio Chavarría',ini:'JC',cedula:'8-787-2222',cargo:'Capataz 2',parcela:'P-02, P-03, P-09',color:'#DBEAFE',colorT:'#1E40AF',estado:'campo',gps:true},
+    {id:'gc',codigo:'001',nombre:'Gabriel Chavarría',ini:'GC',cedula:'4-226-45',cargo:'Jefe de campo 1',parcela:'P-04, P-07, P-11',color:'#DCFCE7',colorT:'#166534',estado:'campo',gps:true},
+    {id:'jc',codigo:'002',nombre:'Julio Chavarría',ini:'JC',cedula:'8-787-2222',cargo:'Jefe de campo 2',parcela:'P-02, P-03, P-09',color:'#DBEAFE',colorT:'#1E40AF',estado:'campo',gps:true},
     {id:'c00',codigo:'004',nombre:'Abrego Morales Alexander',ini:'AM',cedula:'12-714-2043',cargo:'Cosecha',parcela:'P-04',color:'#DCFCE7',colorT:'#166534',estado:'activo',gps:true},
     {id:'c01',codigo:'005',nombre:'Abrego Morales Julian',ini:'AM',cedula:'12-719-2457',cargo:'Fumigación',parcela:'P-07',color:'#DBEAFE',colorT:'#1E40AF',estado:'activo',gps:true},
     {id:'c02',codigo:'006',nombre:'Abrego Smith Onel',ini:'AS',cedula:'12-706-1665',cargo:'Podador',parcela:'P-11',color:'#FEF3C7',colorT:'#92400E',estado:'activo',gps:true},
@@ -2109,16 +2203,39 @@ const STATE={
 
   // Horas extras registradas — [{id, trabajadorId, fecha, horas, motivo, autorizadoPor, estado}]
   horasExtras:[],
+  // Comprobantes de pago liberados por la oficina (en producción llega vía Firebase)
+  // Demo: simula que oficina ya aprobó la planilla de la última quincena
+  // Comprobantes recibidos de la oficina (la tablet NO los genera, solo los lee).
+  // En producción llegan vía Firebase cuando la administración libera la planilla.
+  comprobantesRecibidos:null, // se llena con lo que publica la oficina (o el demo de abajo)
+  // Fichas de Seguro Social subidas por la oficina (la tablet solo las descarga)
+  fichasRecibidas:null,        // {fichas:[{id,codigo,nombre,cuadrilla,nombreArchivo,fecha,pdf}]}
+  fichasDescargadas:{},        // {colaboradorId: fechaISO} — controla la alerta
+  // Liquidaciones/vacaciones cargadas por la oficina (el jefe las muestra al colaborador para firma)
+  liquidacionesRecibidas:null, // {documentos:[{id,tipo,colaborador,colaboradorId,cuadrilla,monto,detalle,html,fecha}]}
+  liquidacionesFirmadas:{},    // {docId:{firma:dataURL, fecha, modo:'digital'|'impreso'}}
+  // Firmas/escaneos de los documentos de campo que genera la tablet (HE, permisos, actas, pesajes)
+  documentosFirmados:{},       // {docNumero:{firma|escaneo, fecha, modo}}
+  bitacora:[],                 // registro de actividad del jefe de campo
+  solicitudes:[],              // solicitudes de cambio de personal pendientes de aprobación del admin
+  incapacidades:[],            // [{id,trabajadorId,nombre,desde,hasta,dias,tipo,observacion,archivo:{data,tipo,nombre},fecha,jefeId,jefeNombre,enviada}]
+  papelera:[],                 // PAPELERA DE RECUPERACIÓN (solo técnico): [{id,tipo,titulo,datos,fecha,borradoPor}]
+  // Usuarios de tablet (jefes de campo) creados desde la oficina y sincronizados
+  usuariosTablet:null,         // [{id,nombre,rol,cuadrilla,usuario,clave,activo}]
 
   // Contador para auto-IDs de colaboradores nuevos
   ultimoCodigoColab:33,
 
   // Definición de módulos del menú principal (orden personalizable)
   menuModulos:[
-    {id:'asist',nombre:'Asistencia',sub:'Toma diaria · stats',ico:'calendar_today',bg:'#DCFCE7',keys:'asistencia toma diaria stats'},
+    {id:'asist',nombre:'Asistencia',sub:'Toma diaria · stats',ico:'calendar_today',bg:'#DCFCE7',keys:'asistencia toma diaria stats inasistencia'},
+    {id:'incapacidades',nombre:'Incapacidades',sub:'Escanear · enviar a oficina',ico:'medical_services',bg:'#FEE2E2',keys:'incapacidad incapacidades certificado medico reposo css enfermedad justificante baja'},
     {id:'tareas',nombre:'Tareas',sub:'17 tipos · activas',ico:'check_circle',bg:'#E8FBF4',keys:'tareas trabajos corozo poda fumigacion coyoles lavado'},
     {id:'camion',nombre:'Transporte',sub:'Despachos · guías',ico:'local_shipping',bg:'#FEF3C7',keys:'transporte camion despacho guia planta viajes coyoles'},
     {id:'personal',nombre:'Personal',sub:'Fichas · colaboradores',ico:'group',bg:'#DBEAFE',keys:'personal colaboradores fichas trabajadores horas extras pago'},
+    {id:'comprobantes',nombre:'Comprobantes',sub:'Pagos · recibos de quincena',ico:'receipt_long',bg:'#DCFCE7',keys:'comprobantes pago recibos quincena planilla salario sueldo'},
+    {id:'fichas',nombre:'Fichas de Seguro',sub:'Fichas SS de colaboradores',ico:'badge',bg:'#DBEAFE',keys:'fichas seguro social css ficha documento'},
+    {id:'liquidaciones',nombre:'Documentos',sub:'Contratos · liquidaciones · firma',ico:'assignment',bg:'#FCE7F3',keys:'liquidacion liquidaciones vacaciones contrato contratos firma colaborador finiquito documento'},
     {id:'entregas',nombre:'Entregas',sub:'Indumentaria · herramientas',ico:'inventory',bg:'#FEF3C7',keys:'entregas actas indumentaria herramientas equipo dotacion firma'},
     {id:'estadisticas',nombre:'Estadísticas',sub:'Tareas · combustible · coyoles',ico:'insights',bg:'#DCFCE7',keys:'estadisticas reportes graficas analisis ranking productividad'},
     {id:'mant',nombre:'Mantenimiento',sub:'Tractores · flota',ico:'agriculture',bg:'#FEF3C7',keys:'mantenimiento tractores camion flota reparacion taller',badge:{texto:'1 alerta',color:'orange'}},
@@ -2153,8 +2270,8 @@ const STATE={
     llamadaEnCurso:null,
     contactos:[
       {id:'admin',nombre:'Administrador · Gerencia',cargo:'Admin',av:'<i class="mi" style="color:#fff">admin_panel_settings</i>',color:'#10C97E',colorT:'#fff',fijo:true,online:true,ultimaVez:'en línea'},
-      {id:'gc',codigo:'001',nombre:'Gabriel Chavarría',cargo:'Capataz 1',av:'GC',color:'#DCFCE7',colorT:'#166534',online:true,ultimaVez:'en línea'},
-      {id:'jc',codigo:'002',nombre:'Julio Chavarría',cargo:'Capataz 2',av:'JC',color:'#DBEAFE',colorT:'#1E40AF',online:true,ultimaVez:'en línea'},
+      {id:'gc',codigo:'001',nombre:'Gabriel Chavarría',cargo:'Jefe de campo 1',av:'GC',color:'#DCFCE7',colorT:'#166534',online:true,ultimaVez:'en línea'},
+      {id:'jc',codigo:'002',nombre:'Julio Chavarría',cargo:'Jefe de campo 2',av:'JC',color:'#DBEAFE',colorT:'#1E40AF',online:true,ultimaVez:'en línea'},
       {id:'grupo-finca',nombre:'Equipo Finca Las Palmas',cargo:'Grupo · 3 participantes',av:'<i class="mi" style="color:#fff">groups</i>',color:'#10b981',colorT:'#fff',grupo:true,participantes:['admin','gc','jc'],online:false,ultimaVez:''}
     ],
     mensajes:{
@@ -2179,7 +2296,7 @@ const STATE={
     ]
   },
 
-  // Cuadrillas por capataz (una principal + temáticas)
+  // Cuadrillas por jefe de campo (una principal + temáticas)
   cuadrillas:{
     gc:[
       {id:'gc-pri',nombre:'Cuadrilla principal',ico:'<i class="mi">star</i>',miembros:['c00','c01','c02','c06','c07','c08','c14','c15','c16','c17','c20','c24'],principal:true},
@@ -2188,10 +2305,10 @@ const STATE={
       {id:'jc-pri',nombre:'Cuadrilla principal',ico:'<i class="mi">star</i>',miembros:['c03','c04','c05','c09','c10','c11','c18','c19','c21','c22','c23','c25','c26','c27','c28','c29'],principal:true},
     ]
   },
-  // Cuadrilla activa hoy por cada capataz
+  // Cuadrilla activa hoy por cada jefe de campo
   cuadrillaActiva:{gc:'gc-pri', jc:'jc-pri'},
 
-  // Solicitudes de préstamo entre capataces
+  // Solicitudes de préstamo entre jefes de campo
   // {id, de, para, trabajadorId, duracion: 'hoy'|'semana'|'indef', estado: 'pendiente'|'aceptada'|'rechazada', fecha}
   solicitudes:[],
 
@@ -2319,9 +2436,13 @@ function go(scr,pushNav=true){
   if(el){el.classList.add('on');STATE.current=scr;}
   if(scr==='menu')renderMenu();
   if(scr==='asist')renderAsistencia();
+  if(scr==='incapacidades')renderIncapacidades();
   if(scr==='tareas')renderTareas();
   if(scr==='camion')renderCamion();
   if(scr==='personal')renderPersonal();
+  if(scr==='comprobantes')renderComprobantes();
+  if(scr==='fichas')renderFichas();
+  if(scr==='liquidaciones')renderLiquidaciones();
   if(scr==='mant')renderMant();
   if(scr==='inventario')renderInv();
   if(scr==='campo')renderCampo();
@@ -2341,7 +2462,6 @@ function goBack(){
 }
 
 /* ═══════════════════════════════════════════ LOGIN ═══════════════════════════════════════════ */
-function selSuc(n){if(n!==1){toast('Sucursal no configurada','err');return;}}
 function seleccionarCapataz(who){
   const uid = who==='gabriel' ? 'gc' : 'jc';
   const pwData = STATE.passwords[uid];
@@ -2363,6 +2483,7 @@ function seleccionarCapataz(who){
   doLogin(who);
 }
 function refreshLoginLocks(){
+  renderSigninUsers();
   const gcPw = STATE.passwords?.gc;
   const jcPw = STATE.passwords?.jc;
   const gcTiene = gcPw && gcPw.tipo && gcPw.valor;
@@ -2373,6 +2494,48 @@ function refreshLoginLocks(){
   if (ljc) ljc.classList.toggle('on', jcTiene);
   if (lgc) lgc.innerHTML = gcTiene ? '<i class="mi">lock</i>' : '';
   if (ljc) ljc.innerHTML = jcTiene ? '<i class="mi">lock</i>' : '';
+}
+// Renderiza las tarjetas de usuario en el login según los usuarios de tablet
+// (creados/sincronizados desde la oficina). Mantiene gabriel/julio como los 2 base.
+function renderSigninUsers(){
+  const cont = document.getElementById('signin-users');
+  if(!cont) return;
+  const usuarios = (STATE.usuariosTablet && STATE.usuariosTablet.length)
+    ? STATE.usuariosTablet
+    : [
+        {id:'gc', nombre:'Gabriel Chavarría', rol:'Jefe de campo 1', cuadrilla:'Gabriel', who:'gabriel'},
+        {id:'jc', nombre:'Julio Chavarría', rol:'Jefe de campo 2', cuadrilla:'Julio', who:'julio'}
+      ];
+  cont.innerHTML = usuarios.filter(u=>u.activo!==false).map(u=>{
+    // Mapear a 'who' para el sistema de PIN existente (gc→gabriel, jc→julio)
+    const who = u.who || (u.id==='gc'?'gabriel':u.id==='jc'?'julio':u.id);
+    const ini = (u.nombre||'?').split(' ').filter(w=>w.length>1).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const colorClase = u.cuadrilla==='Gabriel'?'gabriel':u.cuadrilla==='Julio'?'julio':'gabriel';
+    const lockId = u.id==='gc'?'lock-gc':u.id==='jc'?'lock-jc':'lock-'+u.id;
+    return `
+      <div class="signin-user" onclick="seleccionarUsuarioTablet('${who}','${u.id}')">
+        <div class="signin-avatar ${colorClase}" style="position:relative">
+          ${ini}
+          <div class="signin-lock" id="${lockId}"><i class="mi">lock</i></div>
+        </div>
+        <div class="signin-name">${u.nombre}</div>
+        <div class="signin-role">${u.rol||'Jefe de campo'}</div>
+      </div>`;
+  }).join('');
+}
+// Wrapper: usuarios base usan el flujo existente; usuarios nuevos entran directo con su id
+function seleccionarUsuarioTablet(who, uid){
+  if(who==='gabriel' || who==='julio'){
+    seleccionarCapataz(who); // flujo existente con PIN/contraseña
+  } else {
+    // Usuario adicional: login directo
+    const u = (STATE.usuariosTablet||[]).find(x=>x.id===uid);
+    if(u){
+      STATE.user = {id:u.id, codigo:u.id, nombre:u.nombre, iniciales:(u.nombre||'?').split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase(), cargo:u.rol};
+      STATE.nav=[];
+      go('menu');
+    }
+  }
 }
 // Validación al ingresar (texto): comparar valor ingresado con valor guardado
 function validarPasswordCapataz(who){
@@ -2397,7 +2560,6 @@ function validarPasswordCapataz(who){
 // Estado del PIN actual que se está ingresando
 const PIN_STATE = {value:'', maxLen:4, mode:null, who:null};
 
-function pinReset(){PIN_STATE.value=''; pinRender();}
 function pinPress(d){
   if (PIN_STATE.value.length >= PIN_STATE.maxLen) return;
   PIN_STATE.value += d;
@@ -2671,15 +2833,15 @@ function guardarPasswordTexto(){
     doLogin(STATE.passSetup.forWho);
   }
 }
-// Llamada desde Configuración del capataz para cambiar su pass
+// Llamada desde Configuración del jefe de campo para cambiar su pass
 function capatazCambiarPassword(){
   STATE.passSetup = {paso:0, tipo:null, primerIngreso:'', segundoIngreso:'', forWho:null, forUid:STATE.user.id};
   closeSheet();
   setTimeout(()=>openSheet('pass-setup-elegir-tipo'), 200);
 }
 function doLogin(who){
-  if(who==='gabriel'){STATE.user={id:'gc',codigo:'001',nombre:'Gabriel Chavarría',iniciales:'GC',cargo:'Capataz 1'};}
-  else{STATE.user={id:'jc',codigo:'002',nombre:'Julio Chavarría',iniciales:'JC',cargo:'Capataz 2'};}
+  if(who==='gabriel'){STATE.user={id:'gc',codigo:'001',nombre:'Gabriel Chavarría',iniciales:'GC',cargo:'Jefe de campo 1'};}
+  else{STATE.user={id:'jc',codigo:'002',nombre:'Julio Chavarría',iniciales:'JC',cargo:'Jefe de campo 2'};}
   STATE.nav=[];
   // Si hay foto guardada, cargarla al user
   const u = STATE.colaboradores.find(c => c.id === STATE.user.id);
@@ -2689,7 +2851,7 @@ function doLogin(who){
   document.getElementById('m-cargo').textContent=STATE.user.cargo+' · '+STATE.sucursal;
   document.getElementById('asist-fecha').textContent=STATE.fecha+' · '+STATE.user.nombre;
   document.getElementById('cfg-u').textContent=STATE.user.nombre+' · '+STATE.user.cargo;
-  // Refrescar avatar del header con color del capataz
+  // Refrescar avatar del header con color del jefe de campo
   const avEl = document.getElementById('header-avatar');
   if (avEl && u){
     avEl.style.background = u.color;
@@ -2758,6 +2920,286 @@ setTimeout(() => {
     reprogramarAlertaFinJornada();
   }
 }, 500);
+
+/* ═══════════════════════════════════════════ SINCRONIZACIÓN CON OFICINA (Firebase / almacenamiento compartido) ═══════════════════════════════════════════
+   La tablet del jefe de campo y la app de escritorio comparten los mismos datos.
+   Lo que registra la tablet (asistencia, despachos, HE, GPS) se envía a la oficina,
+   y lo que aprueba la oficina (planilla liberada, comprobantes) llega a la tablet. */
+let _syncGuardando = false;
+async function sincronizarConOficina(){
+  if(_syncGuardando) return;
+  _syncGuardando = true;
+  try{
+    if(typeof window!=='undefined' && window.storage){
+      // 1. LEER lo que la oficina haya cambiado (planilla liberada, etc.)
+      const r = await window.storage.get('chiriqui-oficina', true);
+      if(r && r.value){
+        const d = JSON.parse(r.value);
+        // Recibir cambios de colaboradores hechos desde la oficina (cuentas, salarios, nuevos jefes)
+        if(d.COLABORADORES && Array.isArray(d.COLABORADORES)){
+          d.COLABORADORES.forEach(oc=>{
+            const local = STATE.colaboradores.find(c=>c.id===oc.id);
+            if(local){
+              // Actualizar datos que gestiona la oficina
+              if(oc.numeroCuenta!==undefined) local.numeroCuenta=oc.numeroCuenta;
+              if(oc.banco!==undefined) local.banco=oc.banco;
+              if(oc.tarifa!==undefined) local.tarifa=oc.tarifa;
+              if(oc.fechaFinContrato!==undefined) local.fechaFinContrato=oc.fechaFinContrato;
+              if(oc.capataz!==undefined) local.capataz=oc.capataz;
+              // Si la oficina aprobó cambios de datos, reflejarlos
+              if(oc.nombre) local.nombre=oc.nombre;
+              if(oc.cedula!==undefined) local.cedula=oc.cedula;
+              if(oc.cargo) local.cargo=oc.cargo;
+              if(oc.telefono!==undefined) local.telefono=oc.telefono;
+            } else {
+              // Colaborador nuevo aprobado por la oficina → agregarlo localmente
+              STATE.colaboradores.push(JSON.parse(JSON.stringify(oc)));
+            }
+          });
+          // Eliminar localmente los que la oficina ya no tiene (eliminaciones aprobadas)
+          const idsOficina = new Set(d.COLABORADORES.map(c=>c.id));
+          STATE.colaboradores = STATE.colaboradores.filter(c=>idsOficina.has(c.id));
+        }
+        // Mensajes de chat desde la oficina
+        if(d.CHATS) STATE._chatsOficina = d.CHATS;
+      }
+      // Leer las decisiones del administrador sobre las solicitudes enviadas
+      const rdec = await window.storage.get('chiriqui-solicitudes-decisiones', true);
+      if(rdec && rdec.value){
+        try{
+          const decisiones = JSON.parse(rdec.value); // { solId: {estado:'aprobada'|'rechazada', fecha} }
+          let cambio=false;
+          (STATE.solicitudes||[]).forEach(s=>{
+            const dec = decisiones[s.id];
+            if(dec && s.estado==='pendiente'){
+              s.estado = dec.estado;
+              s.fechaDecision = dec.fecha;
+              cambio=true;
+              const verbo = dec.estado==='aprobada'?'aprobada':'rechazada';
+              toast(`Solicitud ${verbo}: ${s.resumen}`, dec.estado==='aprobada'?'ok':'err');
+            }
+          });
+          if(cambio){
+            guardarEstado();
+            if(STATE.current==='personal'||STATE.current==='menu') renderPersonal();
+          }
+        }catch(e){}
+      }
+      // Leer los comprobantes que la oficina publicó (ya generados y firmados)
+      const rc = await window.storage.get('chiriqui-comprobantes', true);
+      if(rc && rc.value){
+        try{
+          const paq = JSON.parse(rc.value);
+          STATE.comprobantesRecibidos = paq;
+          if(STATE.current==='comprobantes') renderComprobantes();
+        }catch(e){}
+      }
+      // Leer las fichas de Seguro Social que subió la oficina
+      const rf = await window.storage.get('chiriqui-fichas', true);
+      if(rf && rf.value){
+        try{
+          const paqF = JSON.parse(rf.value);
+          STATE.fichasRecibidas = paqF;
+          if(STATE.current==='fichas') renderFichas();
+          else if(STATE.current==='menu') renderMenu();
+        }catch(e){}
+      }
+      // Enviar a la oficina qué fichas ya descargó este jefe
+      if(STATE.fichasDescargadas && Object.keys(STATE.fichasDescargadas).length){
+        const rfd = await window.storage.get('chiriqui-fichas-descargadas', true);
+        let fd = {};
+        try{ if(rfd && rfd.value) fd = JSON.parse(rfd.value); }catch(e){}
+        Object.keys(STATE.fichasDescargadas).forEach(k=>{ fd[k]=STATE.fichasDescargadas[k]; });
+        await window.storage.set('chiriqui-fichas-descargadas', JSON.stringify(fd), true);
+      }
+      // Leer los usuarios de tablet creados/actualizados desde la oficina
+      const rut = await window.storage.get('chiriqui-usuarios-tablet', true);
+      if(rut && rut.value){
+        try{
+          const pu = JSON.parse(rut.value);
+          if(pu.usuarios){
+            STATE.usuariosTablet = pu.usuarios;
+            if(STATE.current==='signin') renderSigninUsers();
+          }
+        }catch(e){}
+      }
+      // Leer la lista de CARGOS que define la oficina (se mantiene igual en ambas apps)
+      const rcar = await window.storage.get('chiriqui-cargos', true);
+      if(rcar && rcar.value){
+        try{
+          const pc = JSON.parse(rcar.value);
+          if(pc.cargos && Array.isArray(pc.cargos) && pc.cargos.length){
+            STATE.config.cargos = pc.cargos;
+          }
+        }catch(e){}
+      }
+      // Leer LIQUIDACIONES Y VACACIONES cargadas por la oficina (para firma del colaborador)
+      const rl = await window.storage.get('chiriqui-liquidaciones', true);
+      if(rl && rl.value){
+        try{
+          const paqL = JSON.parse(rl.value);
+          STATE.liquidacionesRecibidas = paqL;
+          if(STATE.current==='liquidaciones') renderLiquidaciones();
+          else if(STATE.current==='menu') renderMenu();
+        }catch(e){}
+      }
+      // 2. ENVIAR lo que la tablet registró a la oficina
+      const r2 = await window.storage.get('chiriqui-tablet', true);
+      let tabletData = {};
+      try{ if(r2 && r2.value) tabletData = JSON.parse(r2.value); }catch(e){}
+      tabletData[STATE.user?.id || 'tablet'] = {
+        jefe: STATE.user?.nombre || 'Jefe de campo',
+        asistenciaDiaria: STATE.asistenciaDiaria,
+        asistenciaHist: STATE.asistenciaHist,
+        gps: STATE.gpsActual || null,
+        ultimaActualizacion: new Date().toISOString()
+      };
+      await window.storage.set('chiriqui-tablet', JSON.stringify(tabletData), true);
+      // 3. ENVIAR todos los DOCUMENTOS que genera la tablet (HE, permisos, actas, pesajes)
+      const docsTablet = recolectarDocumentos();
+      await window.storage.set('chiriqui-documentos', JSON.stringify(docsTablet), true);
+      // Enviar las firmas/escaneos de los documentos de campo
+      if(STATE.documentosFirmados && Object.keys(STATE.documentosFirmados).length){
+        const rdf = await window.storage.get('chiriqui-documentos-firmas', true);
+        let df = {};
+        try{ if(rdf && rdf.value) df = JSON.parse(rdf.value); }catch(e){}
+        Object.keys(STATE.documentosFirmados).forEach(k=>{ df[k]=STATE.documentosFirmados[k]; });
+        await window.storage.set('chiriqui-documentos-firmas', JSON.stringify(df), true);
+      }
+      // Enviar la bitácora del jefe de campo a la oficina (registro de actividad)
+      if(STATE.bitacora && STATE.bitacora.length){
+        const jefeId = STATE.user?.id || 'tablet';
+        const rbit = await window.storage.get('chiriqui-bitacora-tablet', true);
+        let allBit = {};
+        try{ if(rbit && rbit.value) allBit = JSON.parse(rbit.value); }catch(e){}
+        allBit[jefeId] = STATE.bitacora.slice(0, 200); // los más recientes de este jefe
+        await window.storage.set('chiriqui-bitacora-tablet', JSON.stringify(allBit), true);
+      }
+      // Enviar solicitudes de cambio de personal (pendientes de aprobación del admin)
+      if(STATE.solicitudes && STATE.solicitudes.length){
+        const jefeId = STATE.user?.id || 'tablet';
+        const rsol = await window.storage.get('chiriqui-solicitudes', true);
+        let allSol = {};
+        try{ if(rsol && rsol.value) allSol = JSON.parse(rsol.value); }catch(e){}
+        // Enviar solo las pendientes de este jefe (las resueltas ya las aplicó la oficina)
+        allSol[jefeId] = STATE.solicitudes.filter(s=>s.estado==='pendiente');
+        await window.storage.set('chiriqui-solicitudes', JSON.stringify(allSol), true);
+      }
+      // Enviar incapacidades (certificados médicos) a la oficina
+      if(STATE.incapacidades && STATE.incapacidades.length){
+        const jefeId = STATE.user?.id || 'tablet';
+        const rinc = await window.storage.get('chiriqui-incapacidades', true);
+        let allInc = {};
+        try{ if(rinc && rinc.value) allInc = JSON.parse(rinc.value); }catch(e){}
+        allInc[jefeId] = STATE.incapacidades;
+        await window.storage.set('chiriqui-incapacidades', JSON.stringify(allInc), true);
+        // Marcar como enviadas
+        STATE.incapacidades.forEach(i=>{ i.enviada = true; });
+      }
+      // 4. ENVIAR firmas de liquidaciones que recogió el jefe de campo
+      if(STATE.liquidacionesFirmadas && Object.keys(STATE.liquidacionesFirmadas).length){
+        const rlf = await window.storage.get('chiriqui-liquidaciones-firmas', true);
+        let lf = {};
+        try{ if(rlf && rlf.value) lf = JSON.parse(rlf.value); }catch(e){}
+        Object.keys(STATE.liquidacionesFirmadas).forEach(k=>{ lf[k]=STATE.liquidacionesFirmadas[k]; });
+        await window.storage.set('chiriqui-liquidaciones-firmas', JSON.stringify(lf), true);
+      }
+    }
+  }catch(e){ /* sin conexión: la app sigue funcionando offline */ }
+  _syncGuardando = false;
+}
+// Recolecta todos los documentos generados en la tablet para enviarlos a la oficina
+function recolectarDocumentos(){
+  const jefe = STATE.user?.nombre || 'Jefe de campo';
+  const jefeId = STATE.user?.id || 'tablet';
+  const docs = [];
+  // Horas extras
+  (STATE.horasExtras||[]).forEach(he=>{
+    docs.push({tipo:'Horas extras', numero:'HE-'+(he.id||'').replace('he-','').slice(-6),
+      colaborador:he.trabajador||he.nombre||'—', fecha:he.fecha||'', detalle:(he.horas||'')+' h · '+(he.motivo||''),
+      jefe, jefeId, raw:he});
+  });
+  // Permisos laborales
+  (STATE.permisosLaborales||[]).forEach(p=>{
+    docs.push({tipo:'Permiso laboral', numero:p.numero||'PL-?',
+      colaborador:p.trabajador||p.nombre||'—', fecha:p.fecha||'', detalle:p.motivo||'',
+      jefe, jefeId, raw:p});
+  });
+  // Actas de entrega
+  (STATE.entregas||[]).forEach(a=>{
+    docs.push({tipo:'Acta de entrega', numero:a.numero||'ACT-?',
+      colaborador:a.trabajador||a.nombre||'—', fecha:a.fecha||'', detalle:(a.items||[]).map(i=>i.nombre||i).join(', '),
+      jefe, jefeId, raw:a});
+  });
+  // Recibos de pesaje / despachos del camión
+  (STATE.viajesActivos||[]).concat(STATE.viajesHistorial||[]).forEach(v=>{
+    docs.push({tipo:'Recibo de pesaje', numero:v.guia||'GE-?',
+      colaborador:v.conductor||'—', fecha:v.fecha||v.hora||'', detalle:v.planta+' · '+(v.peso||v.carretas||''),
+      jefe, jefeId, raw:v});
+  });
+  return {jefeId, jefe, documentos:docs, actualizado:new Date().toISOString()};
+}
+// Sincronizar al inicio y cada 5 segundos
+setTimeout(sincronizarConOficina, 800);
+setInterval(sincronizarConOficina, 5000);
+
+// DEMO: si tras intentar sincronizar no llegó nada de la oficina, mostrar comprobantes de muestra
+// (en producción esto NO existe: la tablet siempre espera los comprobantes reales de la oficina)
+setTimeout(() => {
+  if(!STATE.comprobantesRecibidos){
+    const TARIFAS = {gc:3.37, jc:4.00, c10:4.00, c11:2.50, c26:4.00};
+    const demo = STATE.colaboradores.map(c=>{
+      const tarifa = TARIFAS[c.id]||2.28;
+      const dias = 13;
+      const bruto = dias*8*tarifa;
+      const css = bruto*0.0975, se = bruto*0.0125;
+      const neto = bruto-css-se;
+      return {
+        id:c.id, codigo:c.codigo, nombre:c.nombre, cuadrilla:c.capataz,
+        neto, dias, cuenta:c.id==='gc'?'04-10-123456-7':c.id==='jc'?'03-22-987654-1':'',
+        banco:c.id==='gc'?'Banco Nacional':c.id==='jc'?'Banco General':'',
+        html:`<div style="font-family:'Times New Roman',serif;color:#000;padding:40px;max-width:700px;margin:0 auto;font-size:12.5px">
+          <div style="text-align:center;border-bottom:2.5px solid #14532d;padding-bottom:10px;margin-bottom:18px">
+            <div style="font-size:17px;font-weight:bold">Agropecuaria Chiriquí, S.A.</div>
+            <div style="font-size:11px">RUC: 1201236-1-582168 DV72 · Tel: 6500-1696</div>
+          </div>
+          <div style="text-align:center;font-size:15px;font-weight:bold;text-transform:uppercase;margin-bottom:16px">Comprobante de Pago de Salario</div>
+          <table style="width:100%;font-size:12px;margin-bottom:14px;border-collapse:collapse">
+            <tr><td style="padding:4px 8px;background:#f3f4f6;border:1px solid #ccc"><b>Trabajador</b></td><td style="padding:4px 8px;border:1px solid #ccc">${c.nombre}</td><td style="padding:4px 8px;background:#f3f4f6;border:1px solid #ccc"><b>Código</b></td><td style="padding:4px 8px;border:1px solid #ccc">${c.codigo}</td></tr>
+            <tr><td style="padding:4px 8px;background:#f3f4f6;border:1px solid #ccc"><b>Cédula</b></td><td style="padding:4px 8px;border:1px solid #ccc">${c.cedula||'—'}</td><td style="padding:4px 8px;background:#f3f4f6;border:1px solid #ccc"><b>Período</b></td><td style="padding:4px 8px;border:1px solid #ccc">16 al 31 de mayo 2026</td></tr>
+          </table>
+          <table style="width:100%;font-size:12px;border-collapse:collapse;border:1.5px solid #000">
+            <tr style="background:#14532d;color:#fff"><th style="text-align:left;padding:7px 8px;border:1px solid #14532d">Descripción</th><th style="text-align:right;padding:7px 8px;border:1px solid #14532d">Importe (B/.)</th></tr>
+            <tr><td style="padding:5px 8px;border:1px solid #ccc">Salario (${dias} días × ${(dias*8)}h × B/.${tarifa.toFixed(2)})</td><td style="text-align:right;padding:5px 8px;border:1px solid #ccc">${bruto.toFixed(2)}</td></tr>
+            <tr style="font-weight:bold;background:#f3f4f6"><td style="padding:6px 8px;border:1px solid #ccc">TOTAL DEVENGADO</td><td style="text-align:right;padding:6px 8px;border:1px solid #ccc">${bruto.toFixed(2)}</td></tr>
+            <tr><td style="padding:5px 8px;border:1px solid #ccc;color:#7f1d1d">(–) Seguro Social (9.75%)</td><td style="text-align:right;padding:5px 8px;border:1px solid #ccc;color:#7f1d1d">(${css.toFixed(2)})</td></tr>
+            <tr><td style="padding:5px 8px;border:1px solid #ccc;color:#7f1d1d">(–) Seguro Educativo (1.25%)</td><td style="text-align:right;padding:5px 8px;border:1px solid #ccc;color:#7f1d1d">(${se.toFixed(2)})</td></tr>
+            <tr style="font-weight:bold;background:#14532d;color:#fff"><td style="padding:8px;border:1px solid #14532d">NETO A PAGAR</td><td style="text-align:right;padding:8px;border:1px solid #14532d;font-size:14px">B/. ${neto.toFixed(2)}</td></tr>
+          </table>
+          ${c.id==='gc'||c.id==='jc'?`<div style="font-size:11.5px;margin:14px 0;padding:8px 12px;background:#f3f4f6;border-left:3px solid #14532d"><b>Acreditado a la cuenta N.° ${c.id==='gc'?'04-10-123456-7 · Banco Nacional':'03-22-987654-1 · Banco General'}</b></div>`:''}
+          <table style="width:100%;border-collapse:collapse;margin-top:50px">
+            <tr>
+              <td style="width:45%;padding:0"><div style="height:50px"></div></td>
+              <td style="width:10%"></td>
+              <td style="width:45%;padding:0"><div style="height:50px"></div></td>
+            </tr>
+            <tr>
+              <td style="width:45%;text-align:center;border-top:1px solid #000;padding-top:5px;font-size:11px">${c.nombre||'Colaborador'}<br><span style="font-size:10px;color:#555">Colaborador · Céd. ${c.cedula||'____________'}</span></td>
+              <td style="width:10%"></td>
+              <td style="width:45%;text-align:center;border-top:1px solid #000;padding-top:5px;font-size:11px">Administración<br><span style="font-size:10px;color:#555">Administrador</span></td>
+            </tr>
+          </table>
+          <div style="text-align:center;font-size:9.5px;color:#777;margin-top:24px">Documento generado por la administración · Agropecuaria Chiriquí, S.A.</div>
+        </div>`
+      };
+    });
+    STATE.comprobantesRecibidos = {
+      periodo:'16 al 31 de mayo 2026', aprobadaPor:'Administración',
+      fecha:'31 de mayo 2026', liberada:true, comprobantes:demo
+    };
+    if(STATE.current==='comprobantes') renderComprobantes();
+  }
+}, 1500);
 
 /* ═══════════════════════════════════════════ MODO OSCURO ═══════════════════════════════════════════ */
 function aplicarTema(modo){
@@ -2889,17 +3331,28 @@ function capGuardarColab(tid){
   if (!t) return;
   const nombre = get('nombre');
   if (!nombre){toast('El nombre es obligatorio','err');return;}
-  t.nombre = nombre;
-  t.cedula = get('cedula');
-  t.cargo = get('cargo');
-  t.telefono = get('tel');
-  t.fechaIngreso = get('ingreso');
-  t.contactoEmergencia = get('emerg');
-  const palabras = nombre.split(' ').filter(w=>w.length>1);
-  t.ini = palabras.length>=2 ? (palabras[0][0]+palabras[1][0]).toUpperCase() : palabras[0].slice(0,2).toUpperCase();
+  // Datos nuevos propuestos
+  const datos = {
+    nombre,
+    cedula: get('cedula'),
+    cargo: get('cargo'),
+    telefono: get('tel'),
+    fechaIngreso: get('ingreso'),
+    contactoEmergencia: get('emerg')
+  };
+  // ¿Hubo algún cambio real respecto a lo actual?
+  const sinCambios = datos.nombre===t.nombre && datos.cedula===(t.cedula||'') && datos.cargo===t.cargo &&
+                     datos.telefono===(t.telefono||'') && datos.fechaIngreso===(t.fechaIngreso||'') &&
+                     datos.contactoEmergencia===(t.contactoEmergencia||'');
+  if(sinCambios){toast('No hay cambios para guardar','err');return;}
+  if ((STATE.solicitudes||[]).find(s => s.estado==='pendiente' && s.tipo==='editar' && s.colaboradorId===tid)){
+    toast('Ya hay una solicitud pendiente para este colaborador','err');
+    return;
+  }
+  crearSolicitud('editar', tid, datos, `Cambiar datos de ${nombre}`);
   closeSheet();
   renderPersonal();
-  toast(`${nombre.split(' ')[0]} actualizado ✓`,'ok');
+  toast('Solicitud de cambio enviada al administrador para aprobación','ok');
 }
 
 /* ═══════════════════════════════════════════ AGREGAR / ELIMINAR COLABORADOR ═══════════════════════════════════════════ */
@@ -2926,47 +3379,73 @@ function agregarColaborador(){
     toast('Ya existe un colaborador con esa cédula','err');
     return;
   }
-  const palabras = nombre.split(' ').filter(w => w.length > 1);
-  const ini = palabras.length >= 2 ? (palabras[0][0]+palabras[1][0]).toUpperCase() : palabras[0].slice(0,2).toUpperCase();
-  const color = COLORES_COLAB[STATE.colaboradores.length % COLORES_COLAB.length];
-  const nuevo = {
-    id: generarIdColab(),
-    codigo: generarCodigoColab(),
+  // Verificar que no haya ya una solicitud pendiente para agregar esta cédula
+  if (cedula && (STATE.solicitudes||[]).find(s => s.estado==='pendiente' && s.tipo==='agregar' && s.datos && s.datos.cedula===cedula)){
+    toast('Ya hay una solicitud pendiente para esta cédula','err');
+    return;
+  }
+  const datos = {
     nombre,
-    ini,
     cedula,
     cargo: get('cargo') || 'Peón general',
     parcela: get('parcela') || '',
     telefono: get('tel'),
     fechaIngreso: get('ingreso') || new Date().toISOString().slice(0,10),
     contactoEmergencia: get('emerg'),
-    color: color.bg,
-    colorT: color.fg,
-    estado: 'activo',
-    gps: false
+    enfermedad: (document.getElementById('nc-tiene-enf')?.value==='si') ? get('enfermedad') : '',
+    banco: get('banco'),
+    numeroCuenta: get('cuenta'),
+    tipoCuenta: get('tipo-cuenta') || 'Ahorro'
   };
-  STATE.colaboradores.push(nuevo);
+  crearSolicitud('agregar', null, datos, `Agregar a ${nombre}`);
   closeSheet();
   renderPersonal();
-  toast(`${nombre.split(' ')[0]} agregado · ${nuevo.codigo} ✓`,'ok');
+  toast('Solicitud enviada al administrador para aprobación','ok');
+}
+// Crea una solicitud de cambio de personal y la envía a la oficina para aprobación
+function crearSolicitud(tipo, colaboradorId, datos, resumen){
+  if(!STATE.solicitudes) STATE.solicitudes = [];
+  const colab = colaboradorId ? STATE.colaboradores.find(c=>c.id===colaboradorId) : null;
+  const sol = {
+    id: 'sol-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+    tipo,                        // 'agregar' | 'editar' | 'eliminar'
+    colaboradorId: colaboradorId || null,
+    colaboradorNombre: colab ? colab.nombre : (datos && datos.nombre) || '',
+    datos: datos || null,        // datos nuevos (agregar/editar)
+    resumen: resumen || '',
+    jefeId: STATE.user?.id || 'tablet',
+    jefeNombre: STATE.user?.nombre || 'Jefe de campo',
+    cuadrilla: cuadrillaActual() ? cuadrillaActual().nombre : '',
+    estado: 'pendiente',         // 'pendiente' | 'aprobada' | 'rechazada'
+    fecha: new Date().toISOString()
+  };
+  STATE.solicitudes.unshift(sol);
+  registrarActividadTablet('Solicitud enviada', resumen);
+  guardarEstado();
+  sincronizarConOficina();
 }
 function confirmarEliminarColab(cid){
   const t = STATE.colaboradores.find(c => c.id === cid);
   if (!t) return;
-  if (t.cargo.startsWith('Capataz') || t.cargo === 'Conductor'){
-    toast('No se puede eliminar a capataces ni conductor','err');
+  if (t.cargo.startsWith('Jefe de campo') || t.cargo === 'Conductor'){
+    toast('No se puede eliminar a jefes de campo ni conductor','err');
     return;
   }
   openSheet('confirmar-eliminar-'+cid);
 }
 function eliminarColaborador(cid){
-  const idx = STATE.colaboradores.findIndex(c => c.id === cid);
-  if (idx < 0) return;
-  const nombre = STATE.colaboradores[idx].nombre;
-  STATE.colaboradores.splice(idx, 1);
+  const t = STATE.colaboradores.find(c => c.id === cid);
+  if (!t) return;
+  // En vez de eliminar directo, crear solicitud para que el administrador apruebe
+  if ((STATE.solicitudes||[]).find(s => s.estado==='pendiente' && s.tipo==='eliminar' && s.colaboradorId===cid)){
+    toast('Ya hay una solicitud pendiente para eliminar a este colaborador','err');
+    closeSheet();
+    return;
+  }
+  crearSolicitud('eliminar', cid, null, `Eliminar a ${t.nombre}`);
   closeSheet();
   renderPersonal();
-  toast(`${nombre.split(' ')[0]} eliminado`,'ok');
+  toast('Solicitud de eliminación enviada al administrador','ok');
 }
 
 /* ═══════════════════════════════════════════ HORAS EXTRAS ═══════════════════════════════════════════ */
@@ -3122,7 +3601,7 @@ function imprimirAutorizacionHE(heId){
 
       <div class="doc-section">
         <div class="doc-section-title">Declaración y autorización</div>
-        <p>El colaborador arriba identificado acepta voluntariamente laborar las horas extras detalladas en este documento, fuera de su jornada ordinaria de trabajo, por las razones expuestas. El capataz que suscribe autoriza dichas horas extras conforme a las necesidades operativas de la empresa.</p>
+        <p>El colaborador arriba identificado acepta voluntariamente laborar las horas extras detalladas en este documento, fuera de su jornada ordinaria de trabajo, por las razones expuestas. El jefe de campo que suscribe autoriza dichas horas extras conforme a las necesidades operativas de la empresa.</p>
         <p style="margin-top:8px">Las horas extras se reconocerán conforme a lo establecido en el Código de Trabajo de la República de Panamá y demás disposiciones laborales vigentes. Este documento sirve como respaldo para el cálculo de la remuneración correspondiente.</p>
       </div>
 
@@ -3130,7 +3609,7 @@ function imprimirAutorizacionHE(heId){
         <div class="doc-firma">
           <div class="doc-firma-img">${he.firmaColaborador ? `<img src="${he.firmaColaborador}">` : ''}</div>
           <div class="doc-firma-line"></div>
-          <div class="doc-firma-l">Firma del colaborador<br>${t?t.nombre:''}${t?'<br>Céd: '+(t.cedula||'—'):''}</div>
+          <div class="doc-firma-l">${t?t.nombre:'Colaborador'}<br><span style="font-weight:400">Colaborador${t?' · Céd. '+(t.cedula||'—'):''}</span></div>
         </div>
         <div class="doc-firma">
           <div class="doc-firma-img">${firmaCapAct ? `<img src="${firmaCapAct}">` : ''}</div>
@@ -3178,65 +3657,32 @@ function renderMenu(){
   const grid = document.getElementById('mod-grid');
   if (!grid) return;
   const mods = obtenerModulosOrdenados();
-  grid.innerHTML = mods.map(m => `
+  // Badge dinámico: fichas de seguro pendientes de descargar
+  const fichasPend = (typeof fichasPendientes === 'function') ? fichasPendientes() : 0;
+  grid.innerHTML = mods.map(m => {
+    let badge = m.badge ? `<span class="badge ${m.badge.color}">${m.badge.texto}</span>` : '';
+    if (m.id==='fichas' && fichasPend>0){
+      badge = `<span class="badge badge-red">${fichasPend}</span>`;
+    }
+    if (m.id==='liquidaciones' && typeof liquidacionesPendientes==='function'){
+      const lp = liquidacionesPendientes();
+      if(lp>0) badge = `<span class="badge badge-red">${lp}</span>`;
+    }
+    return `
     <div class="mod menu-mod-item" data-id="${m.id}" data-keys="${(m.nombre+' '+m.sub+' '+(m.keys||'')).toLowerCase()}" onclick="go('${m.id}')">
       <div class="ico" style="background:${m.bg}"><i class="mi">${m.ico}</i></div>
       <div class="mod-t">${m.nombre}</div>
       <div class="mod-s">${m.sub}</div>
-      ${m.badge ? `<span class="badge ${m.badge.color}">${m.badge.texto}</span>` : ''}
-    </div>
-  `).join('');
+      ${badge}
+    </div>`;
+  }).join('');
   // También renderiza alertas si la función existe
   if (typeof renderAlertas === 'function') renderAlertas();
 }
-function filtrarMenu(q){
-  const term = (q||'').toLowerCase().trim();
-  const btnX = document.getElementById('menu-buscar-x');
-  if (btnX) btnX.style.display = term ? 'flex' : 'none';
-  const items = document.querySelectorAll('.menu-mod-item');
-  let visibles = 0;
-  items.forEach(it => {
-    const keys = it.dataset.keys || '';
-    const match = (term === '' || keys.includes(term));
-    it.style.display = match ? '' : 'none';
-    if (match) visibles++;
-  });
-  const sinRes = document.getElementById('mod-sin-result');
-  const label = document.getElementById('mod-label');
-  if (sinRes) sinRes.style.display = (visibles === 0) ? 'block' : 'none';
-  if (label) label.textContent = term ? `Resultados (${visibles})` : 'Módulos';
-
-  // Dropdown de sugerencias predictivas
-  const sug = document.getElementById('menu-sug');
-  if (!sug) return;
-  if (term === ''){sug.style.display = 'none'; sug.innerHTML = ''; return;}
-  const mods = STATE.menuModulos || [];
-  const matches = mods.filter(m => {
-    const blob = `${m.nombre} ${m.sub} ${m.keys||''}`.toLowerCase();
-    return blob.includes(term);
-  }).slice(0, 5);
-  if (matches.length === 0){
-    sug.innerHTML = `<div style="padding:12px 14px;font-size:12px;color:var(--fg-mut);text-align:center">Sin coincidencias para "${term}"</div>`;
-  } else {
-    sug.innerHTML = matches.map(m => `
-      <div onclick="document.getElementById('menu-buscar').value='';filtrarMenu('');go('${m.id}')"
-           style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--separator);cursor:pointer"
-           onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background=''">
-        <div style="width:34px;height:34px;border-radius:10px;background:${m.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="mi" style="font-size:18px">${m.ico}</i></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:var(--fg)">${m.nombre}</div>
-          <div style="font-size:11px;color:var(--fg-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.sub}</div>
-        </div>
-        <i class="mi" style="font-size:18px;color:var(--fg-mut)">north_east</i>
-      </div>
-    `).join('');
-  }
-  sug.style.display = 'block';
-}
+// (El buscador del menú fue eliminado; esta función quedó obsoleta y se retiró.)
 
 // ─── Reordenar menú ───
 let _menuDragSrc = null;
-function abrirPersonalizarMenu(){openSheet('personalizar-menu');}
 function pmMoverArriba(id){
   const orden = (STATE.menuOrden || obtenerModulosOrdenados().map(m=>m.id)).slice();
   const idx = orden.indexOf(id);
@@ -3266,7 +3712,7 @@ function pmRestablecer(){
 
 /* ═══════════════════════════════════════════ APARIENCIA: COLOR / FUENTE / TAMAÑO ═══════════════════════════════════════════ */
 // === APARIENCIA POR USUARIO ===
-// Se guarda en el colaborador (cada capataz tiene la suya)
+// Se guarda en el colaborador (cada jefe de campo tiene la suya)
 function aparienciaActual(){
   const uid = STATE.user?.id;
   if (uid){
@@ -3445,10 +3891,6 @@ function reaplicarAparienciaCSS(){
   `;
   styleTag.textContent = css;
 }
-// Aplicar al cargar y cada vez que se hace login
-function aplicarAparienciaUsuario(){
-  reaplicarAparienciaCSS();
-}
 // Genera/actualiza un <style> que sobrescribe los valores hardcodeados con la apariencia elegida
 /* ═══════════════════════════════════════════ ENTREGAS DE INDUMENTARIA / HERRAMIENTAS ═══════════════════════════════════════════ */
 // Estado temporal mientras se crea una entrega nueva
@@ -3570,7 +4012,7 @@ function entregaLimpiarFirma(){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-/* ─── Firma digital del capataz (perfil) ─── */
+/* ─── Firma digital del jefe de campo (perfil) ─── */
 function setupCanvasFirmaCapataz(){
   const canvas = document.getElementById('canvas-firma-cap');
   if (!canvas) return;
@@ -3635,8 +4077,44 @@ function guardarFirmaCapataz(){
   // Actualizar sub-texto del config
   const sub = document.getElementById('cfg-firma-estado');
   if (sub) sub.textContent = 'Firma guardada ✓';
+  sincronizarConOficina();
   closeSheet();
   toast('Firma guardada ✓','ok');
+}
+// Pestañas dibujar / subir PNG en la firma del jefe de campo
+let _capfPngData = null;
+function capfTab(modo){
+  const pd=document.getElementById('capf-pane-dibujar'), pp=document.getElementById('capf-pane-png');
+  const td=document.getElementById('capf-tab-dib'), tp=document.getElementById('capf-tab-png');
+  if(pd) pd.style.display = modo==='dibujar'?'block':'none';
+  if(pp) pp.style.display = modo==='png'?'block':'none';
+  if(td) td.classList.toggle('on', modo==='dibujar');
+  if(tp) tp.classList.toggle('on', modo==='png');
+}
+function capfPngSeleccionado(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){toast('Máx 2 MB','err');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    _capfPngData=e.target.result;
+    const n=document.getElementById('capf-png-nombre'); if(n) n.textContent=file.name;
+    const img=document.getElementById('capf-png-img'); if(img) img.src=_capfPngData;
+    const prev=document.getElementById('capf-png-prev'); if(prev) prev.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+function guardarFirmaCapatazPng(){
+  if(!_capfPngData){toast('Sube tu firma en PNG primero','err');return;}
+  const u = STATE.colaboradores.find(c => c.id === STATE.user?.id);
+  if (!u){toast('Usuario no encontrado','err');return;}
+  u.firmaDigital = _capfPngData;
+  _capfPngData = null;
+  const sub = document.getElementById('cfg-firma-estado');
+  if (sub) sub.textContent = 'Firma guardada ✓';
+  sincronizarConOficina();
+  closeSheet();
+  toast('Firma PNG guardada ✓','ok');
 }
 function eliminarFirmaCapataz(){
   const u = STATE.colaboradores.find(c => c.id === STATE.user?.id);
@@ -3740,8 +4218,10 @@ function abrirEvidenciasDe(modulo, referenciaId){
 function eliminarEvidencia(eid){
   const ev = STATE.evidencias.find(x => x.id === eid);
   if (!ev) return;
-  if (!confirm(`¿Eliminar esta evidencia?\n\n${ev.tituloModulo} · ${ev.fecha}\n${ev.fotos.length} foto${ev.fotos.length!==1?'s':''}\n\nNo se puede deshacer.`)) return;
+  if (!confirm(`¿Eliminar esta evidencia?\n\n${ev.tituloModulo} · ${ev.fecha}\n${ev.fotos.length} foto${ev.fotos.length!==1?'s':''}\n\nSe podrá recuperar desde la papelera del técnico.`)) return;
+  tabletAPapelera('evidencia', (ev.tituloModulo||'Evidencia')+' · '+ev.fecha, ev);
   STATE.evidencias = STATE.evidencias.filter(x => x.id !== eid);
+  guardarEstado();
   openSheet('evidencias-lista');
   toast('Evidencia eliminada','ok');
 }
@@ -3862,7 +4342,7 @@ function imprimirActa(actaId){
     email: e.email || 'agrochi@hotmail.com',
     telefono: e.telefono || '6500-1696'
   };
-  // Firma del capataz que entrega — prioriza la actual en su ficha (por si la cambió)
+  // Firma del jefe de campo que entrega — prioriza la actual en su ficha (por si la cambió)
   const firmaCapataz = entregadoPor?.firmaDigital || a.firmaCapataz || null;
   const html = `
     <div class="doc-page">
@@ -3923,7 +4403,7 @@ function imprimirActa(actaId){
         <div class="doc-firma">
           <div class="doc-firma-img">${a.firma ? `<img src="${a.firma}">` : ''}</div>
           <div class="doc-firma-line"></div>
-          <div class="doc-firma-l">Firma del colaborador<br>${t?t.nombre:''}${t?'<br>Céd: '+(t.cedula||'—'):''}</div>
+          <div class="doc-firma-l">${t?t.nombre:'Colaborador'}<br><span style="font-weight:400">Colaborador${t?' · Céd. '+(t.cedula||'—'):''}</span></div>
         </div>
         <div class="doc-firma">
           <div class="doc-firma-img">${firmaCapataz ? `<img src="${firmaCapataz}">` : ''}</div>
@@ -3960,7 +4440,7 @@ function etpSugerir(query){
   if (!cont) return;
   if (q.length === 0){cont.style.display = 'none'; return;}
   // Buscar coincidencias y mostrar sugerencias
-  const trabs = STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo !== 'Conductor');
+  const trabs = STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo !== 'Conductor');
   const matches = trabs.filter(c => {
     const blob = `${c.nombre} ${c.codigo||''} ${c.cargo}`.toLowerCase();
     return blob.includes(q);
@@ -4071,7 +4551,7 @@ function generarDatosDemoEst(){
   STATE.pagosHist = [];
   const tiposTareas = STATE.tareas.filter(t => t.lbl !== 'Otra (custom)').map(t => t.lbl);
   const parcelas = STATE.parcelas;
-  const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo !== 'Conductor');
+  const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo !== 'Conductor');
   const tractores = STATE.tractores.map(t => t.id);
   const hoy = new Date();
   for (let d = 0; d < 180; d++){
@@ -4192,8 +4672,8 @@ if (!STATE.chat){
   STATE.chat = {
     contactos:[
       {id:'admin', nombre:'Administración', subt:'Gerencia · Oficina', av:'AD', color:'#10C97E', colorT:'#fff', online:true, fijo:true},
-      {id:'gc', nombre:'Gabriel Chavarría', subt:'Capataz 1', av:'GC', color:'#DCFCE7', colorT:'#166534', online:true},
-      {id:'jc', nombre:'Julio Chavarría', subt:'Capataz 2', av:'JC', color:'#DBEAFE', colorT:'#1E40AF', online:false, ultimaVez:'hace 12 min'},
+      {id:'gc', nombre:'Gabriel Chavarría', subt:'Jefe de campo 1', av:'GC', color:'#DCFCE7', colorT:'#166534', online:true},
+      {id:'jc', nombre:'Julio Chavarría', subt:'Jefe de campo 2', av:'JC', color:'#DBEAFE', colorT:'#1E40AF', online:false, ultimaVez:'hace 12 min'},
       {id:'grp-equipo', nombre:'Equipo Finca Las Palmas', subt:'Grupo · 3 participantes', av:'<i class="mi" style="font-size:22px">groups</i>', color:'#EDE9FE', colorT:'#5B21B6', online:true, grupo:true}
     ],
     mensajes:{
@@ -4712,6 +5192,17 @@ function refrescarTogglesConfig(){
       efj.style.color = '';
     }
   }
+  // Estado de la firma del jefe de campo
+  const u = STATE.colaboradores?.find(c => c.id === STATE.user?.id);
+  const fe = document.getElementById('cfg-firma-estado');
+  if(fe){
+    if(u && u.firmaDigital){
+      fe.textContent = 'Firma configurada ✓';
+      fe.style.color = '#0F6E56';
+    } else {
+      fe.innerHTML = '<span style="color:#D97706;font-weight:600"><i class="mi" style="font-size:13px;vertical-align:-2px">warning</i> Sin configurar · cárgala una vez</span>';
+    }
+  }
 }
 function colgarLlamada(motivo){
   if (llamTimer) clearInterval(llamTimer);
@@ -4781,7 +5272,7 @@ function doTechLogin(){
     document.getElementById('tech-greet').textContent = '<i class="mi">build</i> ' + STATE.tech.nombre.split('·')[0].trim();
     document.getElementById('tech-user-display').textContent = 'Usuario: ' + STATE.tech.usuario;
     // Refrescar contadores
-    document.getElementById('tech-trab-count').textContent = STATE.colaboradores.filter(c=>!c.cargo.startsWith('Capataz')&&c.cargo!=='Conductor').length + ' trabajadores';
+    document.getElementById('tech-trab-count').textContent = STATE.colaboradores.filter(c=>!c.cargo.startsWith('Jefe de campo')&&c.cargo!=='Conductor').length + ' trabajadores';
     document.getElementById('tech-parc-count').textContent = STATE.parcelas.length + ' parcelas';
     document.getElementById('tech-tareas-count').textContent = STATE.tareas.length + ' tipos';
     document.getElementById('tech-trac-count').textContent = STATE.tractores.length + ' tractores';
@@ -4866,11 +5357,11 @@ function techCrearCapataz(){
     id, codigo, nombre, ini, cedula, cargo, telefono:tel,
     color:col.bg, colorT:col.fg,
     fechaIngreso: new Date().toISOString().slice(0,10),
-    parcela: cargo.startsWith('Capataz') ? 'Todas' : '—'
+    parcela: cargo.startsWith('Jefe de campo') ? 'Todas' : '—'
   });
   closeSheet();
   toast(`${nombre.split(' ')[0]} agregado ✓ (Cód: ${codigo})`,'ok');
-  setTimeout(()=>openSheet('tech-editar-capataces'), 300);
+  setTimeout(()=>openSheet('tech-editar-jefes de campo'), 300);
 }
 function techEliminarUsuario(uid){
   const c = STATE.colaboradores.find(x=>x.id===uid);
@@ -4880,7 +5371,7 @@ function techEliminarUsuario(uid){
   if (idx >= 0){
     STATE.colaboradores.splice(idx, 1);
     toast(`${c.nombre.split(' ')[0]} eliminado`,'ok');
-    openSheet('tech-editar-capataces');
+    openSheet('tech-editar-jefes de campo');
   }
 }
 function techGuardarTrabajador(tid){
@@ -4972,13 +5463,615 @@ function htmlFichaCSS(t){
       </div>
 
       <div class="doc-firmas">
-        <div class="doc-firma"><div class="doc-firma-img"></div><div class="doc-firma-line"></div><div class="doc-firma-l">Firma del trabajador</div></div>
+        <div class="doc-firma"><div class="doc-firma-img"></div><div class="doc-firma-line"></div><div class="doc-firma-l">Colaborador</div></div>
         <div class="doc-firma"><div class="doc-firma-img"></div><div class="doc-firma-line"></div><div class="doc-firma-l">Firma del empleador</div></div>
       </div>
 
       <div class="doc-footer">Documento generado por sistema de gestión · ${new Date().toLocaleDateString('es-PA')}</div>
     </div>`;
 }
+// ════════════ MÓDULO COMPROBANTES (jefe de campo) ════════════
+// La tablet NO calcula ni genera comprobantes. Solo lee los que la oficina
+// ya generó, firmó y publicó. Llegan vía sincronización en STATE.comprobantesRecibidos.
+function renderComprobantes(){
+  const cont = document.getElementById('comp-cont');
+  const sub = document.getElementById('comp-sub');
+  const paq = STATE.comprobantesRecibidos;
+  // ¿La oficina ya liberó comprobantes?
+  if(!paq || !paq.liberada || !paq.comprobantes || paq.comprobantes.length===0){
+    if(sub) sub.textContent = 'Sin comprobantes disponibles';
+    cont.innerHTML = `<div class="empty"><i class="mi">pending_actions</i><div class="empty-t">Aún no disponibles</div><div class="empty-s">Los comprobantes los genera y aprueba la oficina. Aparecerán aquí cuando la administración libere la planilla de la quincena.</div></div>`;
+    return;
+  }
+  // Filtrar los comprobantes de la cuadrilla de este jefe de campo
+  const cuad = cuadrillaActual();
+  const idsCuad = cuad ? cuad.miembros : [];
+  const mios = paq.comprobantes.filter(cp => idsCuad.includes(cp.id));
+  if(sub) sub.textContent = paq.periodo;
+  cont.innerHTML = `
+    <div class="card card-body" style="background:linear-gradient(135deg,var(--pri-soft),#fff);border:1px solid var(--pri);margin-bottom:14px">
+      <div class="flex" style="gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:12px;background:var(--pri);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="mi" style="color:#fff;font-size:24px">verified</i></div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--pri-2)">Comprobantes recibidos de oficina ✓</div>
+          <div style="font-size:11px;color:var(--fg-mut)">${paq.periodo} · aprobados por ${paq.aprobadaPor||'Administración'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-b" style="margin-bottom:14px"><i class="mi">info</i> <div style="font-size:12px">Estos comprobantes fueron generados y firmados por la administración. Solo puedes verlos y descargarlos.</div></div>
+
+    ${mios.length===0 ? '<div class="empty"><div class="empty-t">Sin comprobantes para tu cuadrilla</div></div>' : `
+    <button class="btn btn-green" style="margin-bottom:14px" onclick="descargarComprobantesMasivoMovil()"><i class="mi" style="vertical-align:-4px">download</i> Descargar todos (${mios.length})</button>
+
+    <div class="section-label" style="margin-top:0">Comprobantes de mi cuadrilla</div>
+    <div class="card">
+      ${mios.map(cp=>{
+        const t = STATE.colaboradores.find(c=>c.id===cp.id) || {};
+        return `
+          <div class="card-row">
+            <div class="av" style="background:${t.color||'#DCFCE7'};color:${t.colorT||'#166534'};width:36px;height:36px;font-size:11px">${t.ini||cp.nombre[0]}</div>
+            <div style="flex:1;min-width:0">
+              <div class="label" style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cp.nombre}</div>
+              <div class="sub">${cp.codigo} · ${cp.dias} días · Neto $${(cp.neto||0).toFixed(2)}${cp.cuenta?' · Cta '+cp.cuenta:''}</div>
+            </div>
+            <button class="btn-sm" style="background:var(--pri-soft);color:var(--pri-2);border:1px solid var(--pri)" onclick="verComprobanteRecibido('${cp.id}')"><i class="mi sm">print</i> Imprimir</button>
+          </div>`;
+      }).join('')}
+    </div>
+    `}
+  `;
+}
+function verComprobanteRecibido(tid){
+  const paq = STATE.comprobantesRecibidos;
+  const cp = paq?.comprobantes?.find(x=>x.id===tid);
+  if(!cp || !cp.html){toast('Comprobante no disponible','err');return;}
+  abrirVentanaImpresionComp('Comprobante '+cp.nombre, cp.html);
+  toast('Comprobante de '+cp.nombre.split(' ')[0],'ok');
+}
+function descargarComprobantesMasivoMovil(){
+  const paq = STATE.comprobantesRecibidos;
+  const cuad = cuadrillaActual();
+  const idsCuad = cuad ? cuad.miembros : [];
+  const mios = (paq?.comprobantes||[]).filter(cp => idsCuad.includes(cp.id));
+  if(mios.length===0){toast('Sin comprobantes','err');return;}
+  const cuerpo = mios.map(cp=>cp.html).join('<div style="page-break-after:always"></div>');
+  abrirVentanaImpresionComp('Comprobantes '+(cuad?cuad.nombre:''), cuerpo);
+  toast(mios.length+' comprobantes listos para imprimir ✓','ok');
+}
+function abrirVentanaImpresionComp(titulo, contenido){
+  const w = window.open('','_blank');
+  if(!w){toast('Permite ventanas emergentes','err');return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${titulo}</title><style>@media print{body{margin:0}}body{margin:0;background:#fff}</style></head><body>${contenido}<script>setTimeout(()=>window.print(),400)<\/script></body></html>`);
+  w.document.close();
+}
+
+/* ════════ FICHAS DE SEGURO SOCIAL (subidas por la oficina, la tablet solo las descarga) ════════ */
+// Cuenta cuántas fichas nuevas (sin descargar) hay para la cuadrilla de este jefe → alerta
+function fichasPendientes(){
+  const paq = STATE.fichasRecibidas;
+  if(!paq || !paq.fichas) return 0;
+  const cuad = cuadrillaActual();
+  const idsCuad = cuad ? cuad.miembros : [];
+  const descargadas = STATE.fichasDescargadas || {};
+  return paq.fichas.filter(f => idsCuad.includes(f.id) && !descargadas[f.id]).length;
+}
+/* ════════════════ INCAPACIDADES ════════════════ */
+function renderIncapacidades(){
+  const cont = document.getElementById('incap-list');
+  if(!cont) return;
+  const lista = (STATE.incapacidades||[]).slice().sort((a,b)=> new Date(b.fecha)-new Date(a.fecha));
+  if(lista.length===0){
+    cont.innerHTML = `<div class="empty"><i class="mi">medical_services</i><div class="empty-t">Sin incapacidades registradas</div><div class="empty-s">Toca "Registrar incapacidad" para escanear o tomar foto de un certificado médico y enviarlo a la oficina.</div></div>`;
+    return;
+  }
+  cont.innerHTML = lista.map(inc=>{
+    const t = STATE.colaboradores.find(c=>c.id===inc.trabajadorId) || {};
+    const esPDF = (inc.archivo?.tipo||'').includes('pdf');
+    return `
+      <div class="card card-body" style="margin-bottom:10px">
+        <div class="flex" style="gap:10px;align-items:flex-start">
+          <div class="av" style="background:${t.color||'#FEE2E2'};color:${t.colorT||'#991B1B'};width:38px;height:38px;font-size:12px;flex-shrink:0">${t.ini||inc.nombre[0]}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:13.5px">${inc.nombre}</div>
+            <div style="font-size:11.5px;color:var(--fg-sub);margin-top:1px">${inc.tipo} · ${inc.dias} día${inc.dias!=1?'s':''}</div>
+            <div style="font-size:11px;color:var(--fg-mut);margin-top:2px">Del ${inc.desde} al ${inc.hasta}</div>
+            ${inc.observacion?`<div style="font-size:11px;color:var(--fg-mut);margin-top:2px">${inc.observacion}</div>`:''}
+          </div>
+          <span class="chip ${inc.enviada?'chip-g':'chip-a'}" style="flex-shrink:0">${inc.enviada?'✓ Enviada':'Pendiente'}</span>
+        </div>
+        <div class="flex" style="gap:6px;margin-top:10px">
+          <button class="btn-sm" style="flex:1;background:var(--pri-soft);color:var(--pri-2);border:1px solid var(--pri);justify-content:center" onclick="verIncapacidad('${inc.id}')"><i class="mi sm">${esPDF?'picture_as_pdf':'image'}</i> Ver documento</button>
+          <button class="btn-sm" style="background:#FEE2E2;color:#991B1B;border:1px solid #FECACA" onclick="eliminarIncapacidad('${inc.id}')"><i class="mi sm">delete</i></button>
+        </div>
+      </div>`;
+  }).join('');
+}
+let _incapArchivo = null; // {data, tipo, nombre}
+function incapArchivoSeleccionado(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 8*1024*1024){toast('El archivo no debe superar 8 MB','err');return;}
+  const reader = new FileReader();
+  reader.onload = e=>{
+    _incapArchivo = {data:e.target.result, tipo:file.type, nombre:file.name};
+    const prev = document.getElementById('incap-preview');
+    const info = document.getElementById('incap-archivo-info');
+    if(info) info.textContent = file.name;
+    if(prev){
+      if(file.type.includes('pdf')){
+        prev.innerHTML = `<div style="padding:16px;text-align:center;background:#fff;border-radius:10px"><i class="mi" style="font-size:40px;color:#DC2626">picture_as_pdf</i><div style="font-size:12px;margin-top:4px">${file.name}</div></div>`;
+      } else {
+        prev.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:10px;max-height:240px;object-fit:contain;background:#fff">`;
+      }
+      prev.style.display = 'block';
+    }
+    const btn = document.getElementById('incap-guardar');
+    if(btn){ btn.disabled=false; btn.style.opacity='1'; }
+  };
+  reader.readAsDataURL(file);
+}
+function calcDiasIncap(){
+  const desde = document.getElementById('incap-desde')?.value;
+  const hasta = document.getElementById('incap-hasta')?.value;
+  const out = document.getElementById('incap-dias');
+  if(desde && hasta && out){
+    const d1 = new Date(desde), d2 = new Date(hasta);
+    const dias = Math.floor((d2-d1)/(1000*60*60*24)) + 1;
+    out.value = dias>0 ? dias : 1;
+  }
+}
+function guardarIncapacidad(){
+  const trabId = document.getElementById('incap-trab')?.value;
+  const tipo = document.getElementById('incap-tipo')?.value;
+  const desde = document.getElementById('incap-desde')?.value;
+  const hasta = document.getElementById('incap-hasta')?.value;
+  const dias = parseInt(document.getElementById('incap-dias')?.value) || 1;
+  const obs = document.getElementById('incap-obs')?.value || '';
+  if(!trabId){toast('Seleccione el colaborador','err');return;}
+  if(!desde || !hasta){toast('Indique las fechas de la incapacidad','err');return;}
+  if(!_incapArchivo){toast('Adjunte la foto o el escaneo del certificado','err');return;}
+  const t = STATE.colaboradores.find(c=>c.id===trabId);
+  const inc = {
+    id: 'inc-'+Date.now()+'-'+Math.floor(Math.random()*1000),
+    trabajadorId: trabId,
+    nombre: t?.nombre || 'Colaborador',
+    cedula: t?.cedula || '',
+    tipo, desde, hasta, dias,
+    observacion: obs,
+    archivo: _incapArchivo,
+    fecha: new Date().toISOString(),
+    jefeId: STATE.user?.id || 'tablet',
+    jefeNombre: STATE.user?.nombre || 'Jefe de campo',
+    cuadrilla: cuadrillaActual() ? cuadrillaActual().nombre : '',
+    enviada: false
+  };
+  if(!STATE.incapacidades) STATE.incapacidades = [];
+  STATE.incapacidades.unshift(inc);
+  _incapArchivo = null;
+  registrarActividadTablet('Incapacidad registrada', inc.nombre+' · '+inc.tipo+' · '+inc.dias+' día(s)');
+  guardarEstado();
+  sincronizarConOficina(); // la envía a la oficina
+  closeSheet();
+  renderIncapacidades();
+  toast('Incapacidad registrada y enviada a la oficina ✓','ok');
+}
+function verIncapacidad(id){
+  const inc = (STATE.incapacidades||[]).find(x=>x.id===id);
+  if(!inc || !inc.archivo){toast('Documento no disponible','err');return;}
+  STATE._incapVer = id;
+  openSheet('ver-incapacidad');
+}
+// PAPELERA tablet: envía lo borrado a recuperación (solo el técnico la ve)
+function tabletAPapelera(tipo, titulo, datos){
+  if(!STATE.papelera) STATE.papelera = [];
+  STATE.papelera.unshift({
+    id:'pap'+Date.now()+Math.floor(Math.random()*1000),
+    tipo, titulo:titulo||'(sin título)',
+    datos: JSON.parse(JSON.stringify(datos)),
+    fecha: new Date().toISOString(),
+    borradoPor: (STATE.user && STATE.user.nombre) ? STATE.user.nombre : 'Jefe de campo'
+  });
+  if(STATE.papelera.length>300) STATE.papelera = STATE.papelera.slice(0,300);
+}
+function tabletRestaurar(id){
+  const item = (STATE.papelera||[]).find(x=>x.id===id);
+  if(!item) return;
+  const d = item.datos; d._recuperado = true;
+  const t = item.tipo;
+  if(t==='incapacidad'){ STATE.incapacidades=STATE.incapacidades||[]; if(!STATE.incapacidades.find(i=>i.id===d.id)) STATE.incapacidades.push(d); }
+  else if(t==='evidencia'){ STATE.evidencias=STATE.evidencias||[]; if(!STATE.evidencias.find(e=>e.id===d.id)) STATE.evidencias.push(d); }
+  else if(t==='tractor'){ STATE.tractores=STATE.tractores||[]; if(!STATE.tractores.find(x=>x.id===d.id)) STATE.tractores.push(d); }
+  else if(t==='carreta'){ STATE.carretas=STATE.carretas||[]; if(!STATE.carretas.find(x=>x.id===d.id)) STATE.carretas.push(d); }
+  else if(t==='chapeadora'){ STATE.chapeadoras=STATE.chapeadoras||[]; if(!STATE.chapeadoras.find(x=>x.id===d.id)) STATE.chapeadoras.push(d); }
+  else if(t==='conductor'){ STATE.conductoresExternos=STATE.conductoresExternos||[]; if(!STATE.conductoresExternos.find(x=>x.id===d.id)) STATE.conductoresExternos.push(d); }
+  STATE.papelera = STATE.papelera.filter(x=>x.id!==id);
+  guardarEstado();
+  renderPapeleraTablet();
+  toast('Elemento restaurado ✓','ok');
+}
+function tabletEliminarDef(id){
+  const item=(STATE.papelera||[]).find(x=>x.id===id);
+  if(!item) return;
+  if(!confirm('Eliminar DEFINITIVAMENTE "'+item.titulo+'". No se podrá recuperar. ¿Continuar?'))return;
+  STATE.papelera = STATE.papelera.filter(x=>x.id!==id);
+  guardarEstado();
+  renderPapeleraTablet();
+  toast('Eliminado definitivamente','ok');
+}
+function abrirPapeleraTablet(){ openSheet('tech-papelera'); }
+function renderPapeleraTabletHTML(){
+  const pap = STATE.papelera||[];
+  const iconos = {incapacidad:'medical_services',evidencia:'photo_camera',colaborador:'person',documento:'description',tractor:'agriculture',carreta:'inventory_2',chapeadora:'settings',conductor:'local_shipping'};
+  const nombres = {incapacidad:'Incapacidad',evidencia:'Evidencia',colaborador:'Colaborador',documento:'Documento',tractor:'Tractor',carreta:'Carreta',chapeadora:'Chapeadora',conductor:'Conductor'};
+  return `
+    <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">restore_from_trash</i> Papelera de recuperación</div><div style="font-size:11px;color:#999">Restaura elementos borrados a su área</div></div>
+    <div style="background:#FEF3C7;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:11px;color:#92400E">Todo lo borrado queda aquí. Al restaurar, vuelve a su lugar y aparece marcado como "recuperado".</div>
+    ${pap.length===0
+      ? `<div style="text-align:center;padding:40px 0;color:#999"><i class="mi" style="font-size:36px">delete_outline</i><div style="margin-top:8px;font-size:13px">La papelera está vacía</div></div>`
+      : `<div class="card" id="papelera-lista-tablet">${pap.map(item=>`
+          <div class="card-row">
+            <div class="ico" style="background:#F1EFE8"><i class="mi">${iconos[item.tipo]||'inventory_2'}</i></div>
+            <div style="flex:1;min-width:0"><div class="label">${item.titulo}</div><div class="sub">${nombres[item.tipo]||item.tipo} · ${new Date(item.fecha).toLocaleDateString('es-PA')}</div></div>
+            <button class="btn-sm" style="background:#DCFCE7;color:#166534;border-color:#BBF7D0" onclick="tabletRestaurar('${item.id}')"><i class="mi">restore</i></button>
+            <button class="btn-sm" style="background:#FEE2E2;color:#991B1B;border-color:#FECACA;margin-left:5px" onclick="tabletEliminarDef('${item.id}')"><i class="mi">delete_forever</i></button>
+          </div>`).join('')}</div>`}
+    <button class="btn btn-outline" style="margin-top:12px" onclick="closeSheet()">Cerrar</button>`;
+}
+function renderPapeleraTablet(){
+  const cont = document.getElementById('sheet-content');
+  if(cont && STATE._sheetActual==='tech-papelera'){ cont.innerHTML = renderPapeleraTabletHTML(); }
+}
+function eliminarIncapacidad(id){
+  if(!confirm('¿Eliminar esta incapacidad? También se quitará de la oficina.'))return;
+  const inc = (STATE.incapacidades||[]).find(x=>x.id===id);
+  if(inc) tabletAPapelera('incapacidad', 'Incapacidad de '+(inc.nombre||''), inc);
+  STATE.incapacidades = (STATE.incapacidades||[]).filter(x=>x.id!==id);
+  guardarEstado();
+  sincronizarConOficina();
+  renderIncapacidades();
+  toast('Incapacidad eliminada','ok');
+}
+
+function renderFichas(){
+  const cont = document.getElementById('fichas-cont');
+  const sub = document.getElementById('fichas-sub');
+  const paq = STATE.fichasRecibidas;
+  const cuad = cuadrillaActual();
+  const idsCuad = cuad ? cuad.miembros : [];
+  const mias = (paq?.fichas||[]).filter(f => idsCuad.includes(f.id));
+  const descargadas = STATE.fichasDescargadas || {};
+  const pendientes = mias.filter(f => !descargadas[f.id]).length;
+  if(sub) sub.textContent = mias.length+' fichas disponibles';
+  if(mias.length===0){
+    cont.innerHTML = `<div class="empty"><i class="mi">badge</i><div class="empty-t">Sin fichas disponibles</div><div class="empty-s">La oficina sube las fichas de Seguro Social. Aparecerán aquí cuando estén disponibles para tu cuadrilla.</div></div>`;
+    return;
+  }
+  cont.innerHTML = `
+    ${pendientes>0?`
+      <div class="card card-body" style="background:linear-gradient(135deg,#DBEAFE,#EFF6FF);border:1px solid #93C5FD;margin-bottom:14px">
+        <div class="flex" style="gap:12px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:12px;background:#1E40AF;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="mi" style="color:#fff;font-size:24px">notifications_active</i></div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:#1E40AF">${pendientes} ficha${pendientes!==1?'s':''} nueva${pendientes!==1?'s':''} por descargar</div>
+            <div style="font-size:11px;color:#1E40AF">La oficina subió fichas de Seguro Social de tu cuadrilla.</div>
+          </div>
+        </div>
+      </div>
+    `:`
+      <div class="alert alert-g" style="margin-bottom:14px"><i class="mi">check_circle</i> <div style="font-size:12px">Todas las fichas disponibles ya fueron descargadas. Puedes volver a descargarlas cuando quieras.</div></div>
+    `}
+
+    <div class="section-label" style="margin-top:0">Fichas de mi cuadrilla</div>
+    <div class="card">
+      ${mias.map(f=>{
+        const t = STATE.colaboradores.find(c=>c.id===f.id) || {};
+        const yaDesc = !!descargadas[f.id];
+        return `
+          <div class="card-row">
+            <div class="av" style="background:${t.color||'#DBEAFE'};color:${t.colorT||'#1E40AF'};width:36px;height:36px;font-size:11px;position:relative">${t.ini||f.nombre[0]}${!yaDesc?'<span style="position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:#EF4444;border:2px solid #fff"></span>':''}</div>
+            <div style="flex:1;min-width:0">
+              <div class="label" style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.nombre}</div>
+              <div class="sub">${f.codigo} · ${f.nombreArchivo||'ficha.pdf'}${yaDesc?' · ✓ descargada':' · nueva'}</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-sm" style="background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD" onclick="imprimirFicha('${f.id}')"><i class="mi sm">print</i></button>
+              <button class="btn-sm" style="background:${yaDesc?'#f1f5f9':'#DCFCE7'};color:${yaDesc?'#64748b':'#166534'};border:1px solid ${yaDesc?'#e2e8f0':'#86EFAC'}" onclick="descargarFicha('${f.id}')"><i class="mi sm">download</i></button>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--fg-mut);text-align:center;margin-top:10px">Las fichas las genera y sube la administración. Aquí puedes imprimirlas o descargarlas.</div>
+  `;
+}
+function imprimirFicha(id){
+  const paq = STATE.fichasRecibidas;
+  const f = paq?.fichas?.find(x=>x.id===id);
+  if(!f || !f.pdf){toast('Ficha no disponible','err');return;}
+  // Abrir el PDF en una ventana e invocar impresión
+  const w = window.open('','_blank');
+  if(!w){toast('Permite ventanas emergentes para imprimir','err');return;}
+  const esPDF = (f.pdf||'').startsWith('data:application/pdf') || (f.nombreArchivo||'').toLowerCase().endsWith('.pdf');
+  if(esPDF){
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ficha ${f.nombre}</title></head><body style="margin:0"><embed src="${f.pdf}" type="application/pdf" width="100%" height="100%" style="height:100vh"><script>setTimeout(()=>{try{window.print()}catch(e){}},600)<\/script></body></html>`);
+  } else {
+    // Imagen
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ficha ${f.nombre}</title><style>@media print{body{margin:0}}body{margin:0;text-align:center}img{max-width:100%}</style></head><body><img src="${f.pdf}" onload="setTimeout(()=>window.print(),300)"></body></html>`);
+  }
+  w.document.close();
+  // Marcar como descargada/vista
+  if(!STATE.fichasDescargadas) STATE.fichasDescargadas = {};
+  if(!STATE.fichasDescargadas[id]){
+    STATE.fichasDescargadas[id] = new Date().toISOString();
+    sincronizarConOficina();
+    renderFichas();
+    if(STATE.current==='menu') renderMenu();
+  }
+  toast('Ficha de '+f.nombre.split(' ')[0]+' lista para imprimir','ok');
+}
+function descargarFicha(id){
+  const paq = STATE.fichasRecibidas;
+  const f = paq?.fichas?.find(x=>x.id===id);
+  if(!f || !f.pdf){toast('Ficha no disponible','err');return;}
+  // Abrir/descargar el PDF
+  const a = document.createElement('a');
+  a.href = f.pdf;
+  a.download = f.nombreArchivo || ('Ficha_'+f.nombre.replace(/ /g,'_')+'.pdf');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  // Marcar como descargada (quita la alerta) — pero puede volver a descargar
+  if(!STATE.fichasDescargadas) STATE.fichasDescargadas = {};
+  STATE.fichasDescargadas[id] = new Date().toISOString();
+  // Avisar a la oficina que fue descargada
+  sincronizarConOficina();
+  renderFichas();
+  if(STATE.current==='menu') renderMenu();
+  toast('Ficha de '+f.nombre.split(' ')[0]+' descargada','ok');
+}
+
+/* ════════ LIQUIDACIONES Y VACACIONES (cargadas por oficina, firma del colaborador) ════════ */
+function liquidacionesPendientes(){
+  const paq = STATE.liquidacionesRecibidas;
+  if(!paq || !paq.documentos) return 0;
+  const cuad = cuadrillaActual();
+  const idsCuad = cuad ? cuad.miembros : [];
+  const firmadas = STATE.liquidacionesFirmadas || {};
+  return paq.documentos.filter(d => idsCuad.includes(d.colaboradorId) && !firmadas[d.id]).length;
+}
+function renderLiquidaciones(){
+  const cont = document.getElementById('liq-cont');
+  const sub = document.getElementById('liq-sub');
+  const paq = STATE.liquidacionesRecibidas;
+  const cuad = cuadrillaActual();
+  const idsCuad = cuad ? cuad.miembros : [];
+  const mias = (paq?.documentos||[]).filter(d => idsCuad.includes(d.colaboradorId));
+  const firmadas = STATE.liquidacionesFirmadas || {};
+  const pend = mias.filter(d=>!firmadas[d.id]).length;
+  if(sub) sub.textContent = mias.length+' documentos';
+  if(mias.length===0){
+    cont.innerHTML = `<div class="empty"><i class="mi">assignment</i><div class="empty-t">Sin documentos</div><div class="empty-s">La oficina carga aquí las liquidaciones, vacaciones y otros documentos para que el colaborador los firme.</div></div>`;
+    return;
+  }
+  cont.innerHTML = `
+    ${pend>0?`
+      <div class="card card-body" style="background:linear-gradient(135deg,#FCE7F3,#FDF2F8);border:1px solid #F9A8D4;margin-bottom:14px">
+        <div class="flex" style="gap:12px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:12px;background:#BE185D;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="mi" style="color:#fff;font-size:24px">draw</i></div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:#BE185D">${pend} documento${pend!==1?'s':''} por firmar</div>
+            <div style="font-size:11px;color:#BE185D">El colaborador debe firmar (digital o impreso).</div>
+          </div>
+        </div>
+      </div>
+    `:`<div class="alert alert-g" style="margin-bottom:14px"><i class="mi">check_circle</i> <div style="font-size:12px">Todos los documentos firmados.</div></div>`}
+
+    <div class="section-label" style="margin-top:0">Documentos de mi cuadrilla</div>
+    <div class="card">
+      ${mias.map(d=>{
+        const t = STATE.colaboradores.find(c=>c.id===d.colaboradorId) || {};
+        const yaFirmo = !!firmadas[d.id];
+        const tipoColor = d.tipo==='Contrato'?'#166534':d.tipo==='Liquidación'?'#BE185D':d.tipo==='Vacaciones'?'#0891B2':'#7C3AED';
+        return `
+          <div class="card-row" style="flex-wrap:wrap">
+            <div class="av" style="background:${t.color||'#FCE7F3'};color:${t.colorT||'#BE185D'};width:36px;height:36px;font-size:11px;position:relative">${t.ini||d.colaborador[0]}${!yaFirmo?'<span style="position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:#EF4444;border:2px solid #fff"></span>':''}</div>
+            <div style="flex:1;min-width:0">
+              <div class="label" style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.colaborador}</div>
+              <div class="sub"><span style="color:${tipoColor};font-weight:600">${d.tipo}</span>${d.monto?' · $'+Number(d.monto).toFixed(2):''}${yaFirmo?' · ✓ firmado':''}</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-sm" style="background:var(--pri-soft);color:var(--pri-2);border:1px solid var(--pri)" onclick="verDocLiquidacion('${d.id}')" title="Ver / imprimir"><i class="mi sm">visibility</i></button>
+              ${!yaFirmo?`<button class="btn-sm" style="background:#FCE7F3;color:#BE185D;border:1px solid #F9A8D4" onclick="firmarLiquidacion('${d.id}')" title="Firmar"><i class="mi sm">draw</i></button>`:`<button class="btn-sm" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0" onclick="verDocLiquidacion('${d.id}')" title="Ver firmado"><i class="mi sm">check</i></button>`}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--fg-mut);text-align:center;margin-top:10px">Estos documentos los carga la administración. El jefe de campo los presenta al colaborador para su firma.</div>
+  `;
+}
+function verDocLiquidacion(id){
+  const d = STATE.liquidacionesRecibidas?.documentos?.find(x=>x.id===id);
+  if(!d){toast('Documento no disponible','err');return;}
+  const firma = STATE.liquidacionesFirmadas?.[id];
+  STATE._liqVerId = id;
+  // Construir el HTML a mostrar (con firma estampada si la hay)
+  let html = d.html || '';
+  if(firma && firma.firma) html = html.replace('<!--FIRMA_COLABORADOR-->', `<img src="${firma.firma}" style="max-height:54px;max-width:200px;display:block">`);
+  const esEscaneo = firma && firma.escaneo;
+  openSheet('ver-liq');
+  // Inyectar el contenido tras abrir el sheet
+  setTimeout(()=>{
+    const cont = document.getElementById('verliq-doc');
+    if(cont){
+      if(esEscaneo){
+        if(firma.escaneo.tipo && firma.escaneo.tipo.includes('pdf')) cont.innerHTML = `<iframe src="${firma.escaneo.data}" style="width:100%;height:50vh;border:0;border-radius:10px"></iframe>`;
+        else cont.innerHTML = `<img src="${firma.escaneo.data}" style="width:100%;border-radius:10px">`;
+      } else {
+        cont.innerHTML = `<div style="background:#fff;border-radius:10px;overflow:hidden">${html}</div>`;
+      }
+    }
+  }, 100);
+}
+function firmarLiquidacion(id){
+  const d = STATE.liquidacionesRecibidas?.documentos?.find(x=>x.id===id);
+  if(!d){toast('Documento no disponible','err');return;}
+  // PASO 1: mostrar el documento completo para que el colaborador lo LEA antes de firmar
+  verDocLiquidacion(id);
+}
+// PASO 2: abre el panel de firma (se llama desde el botón "Leído, proceder a firmar")
+function abrirFirmaLiquidacion(id){
+  const d = STATE.liquidacionesRecibidas?.documentos?.find(x=>x.id===id);
+  if(!d){toast('Documento no disponible','err');return;}
+  STATE._liqFirmando = id;
+  _liqEscaneo = null;
+  _liqPngData = null;
+  openSheet('firma-liq');
+  setTimeout(()=>initCanvasFirmaLiq(), 200); // el tab digital está activo por defecto
+}
+let _liqCtx=null,_liqDibujando=false,_liqVacio=true;
+function initCanvasFirmaLiq(){
+  const canvas = document.getElementById('liq-canvas');
+  if(!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width; canvas.height = 200;
+  _liqCtx = canvas.getContext('2d');
+  _liqCtx.strokeStyle='#111'; _liqCtx.lineWidth=2.5; _liqCtx.lineCap='round'; _liqCtx.lineJoin='round';
+  _liqVacio=true;
+  const pos=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
+  const start=e=>{e.preventDefault();_liqDibujando=true;const p=pos(e);_liqCtx.beginPath();_liqCtx.moveTo(p.x,p.y);};
+  const move=e=>{if(!_liqDibujando)return;e.preventDefault();const p=pos(e);_liqCtx.lineTo(p.x,p.y);_liqCtx.stroke();_liqVacio=false;};
+  const end=()=>{_liqDibujando=false;};
+  canvas.onmousedown=start;canvas.onmousemove=move;canvas.onmouseup=end;canvas.onmouseleave=end;
+  canvas.ontouchstart=start;canvas.ontouchmove=move;canvas.ontouchend=end;
+}
+function limpiarFirmaLiq(){
+  const c=document.getElementById('liq-canvas');
+  if(_liqCtx&&c){_liqCtx.clearRect(0,0,c.width,c.height);_liqVacio=true;}
+}
+function guardarFirmaLiq(modo){
+  const id = STATE._liqFirmando;
+  if(!id) return;
+  if(!STATE.liquidacionesFirmadas) STATE.liquidacionesFirmadas={};
+  let firmaData = null;     // firma digital (dataURL del canvas o PNG subido)
+  let escaneo = null;       // documento escaneado (dataURL PDF/imagen)
+  if(modo==='digital'){
+    if(_liqPngData){
+      firmaData = _liqPngData;  // usó PNG subido
+    } else {
+      const canvas=document.getElementById('liq-canvas');
+      if(_liqVacio){toast('El colaborador debe firmar o subir su PNG','err');return;}
+      firmaData = canvas.toDataURL('image/png');
+    }
+  } else if(modo==='escaneado'){
+    if(!_liqEscaneo){toast('Carga el documento escaneado','err');return;}
+    escaneo = _liqEscaneo;
+  }
+  STATE.liquidacionesFirmadas[id] = {firma:firmaData, escaneo, fecha:new Date().toISOString(), modo};
+  _liqEscaneo = null; _liqPngData = null;
+  sincronizarConOficina();
+  closeSheet();
+  renderLiquidaciones();
+  if(STATE.current==='menu') renderMenu();
+  registrarActividadTablet('Liquidación firmada', (d?d.tipo:'Documento')+' · '+(modo==='digital'?'firma digital':modo==='escaneado'?'escaneado':'impreso'));
+  const msg = modo==='digital'?'Firma digital registrada ✓':modo==='escaneado'?'Documento firmado cargado ✓':'Marcado como firmado ✓';
+  toast(msg,'ok');
+}
+let _liqPngData = null;
+
+/* ════════ FIRMA GENÉRICA DE DOCUMENTOS DE CAMPO (HE, permisos, actas, pesajes) ════════ */
+// Abre la VISTA PREVIA del documento de campo para que el colaborador lo lea antes de firmar.
+// doc = {numero, tipo, colaborador, imprimirFn, idReal} — imprimirFn es el nombre de la función que imprime ese doc
+function firmarDocumentoCampo(numero, tipo, colaborador, imprimirFn, idReal){
+  STATE._docFirmando = {numero, tipo, colaborador, imprimirFn, idReal: idReal||numero};
+  STATE._docEscaneo = null;
+  _docPngData = null;
+  _docEscaneoTmp = null;
+  // PASO 1: generar y mostrar el documento completo para lectura
+  const cap = capturarHtmlDocumento(imprimirFn, idReal||numero);
+  STATE._docPreviewHtml = (cap && cap.html) ? cap.html : '';
+  openSheet('previa-doc');
+}
+// PASO 2: abre el panel de firma (desde el botón "Leído, proceder a firmar")
+function abrirFirmaDocumentoCampo(){
+  if(!STATE._docFirmando){toast('Documento no disponible','err');return;}
+  openSheet('firma-doc');
+  setTimeout(()=>initCanvasFirmaDoc(), 200);
+}
+function docFirmaTab(modo){
+  document.getElementById('fd-pane-digital').style.display = modo==='digital'?'block':'none';
+  document.getElementById('fd-pane-impreso').style.display = modo==='impreso'?'block':'none';
+  document.getElementById('fd-tab-dig').classList.toggle('on', modo==='digital');
+  document.getElementById('fd-tab-imp').classList.toggle('on', modo==='impreso');
+  if(modo==='digital') setTimeout(()=>initCanvasFirmaDoc(),100);
+}
+let _docCtx=null,_docDibujando=false,_docVacio=true;
+function initCanvasFirmaDoc(){
+  const canvas = document.getElementById('doc-canvas');
+  if(!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width; canvas.height = 200;
+  _docCtx = canvas.getContext('2d');
+  _docCtx.strokeStyle='#111'; _docCtx.lineWidth=2.5; _docCtx.lineCap='round'; _docCtx.lineJoin='round';
+  _docVacio=true;
+  const pos=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
+  const start=e=>{e.preventDefault();_docDibujando=true;const p=pos(e);_docCtx.beginPath();_docCtx.moveTo(p.x,p.y);};
+  const move=e=>{if(!_docDibujando)return;e.preventDefault();const p=pos(e);_docCtx.lineTo(p.x,p.y);_docCtx.stroke();_docVacio=false;};
+  const end=()=>{_docDibujando=false;};
+  canvas.onmousedown=start;canvas.onmousemove=move;canvas.onmouseup=end;canvas.onmouseleave=end;
+  canvas.ontouchstart=start;canvas.ontouchmove=move;canvas.ontouchend=end;
+}
+function limpiarFirmaDoc(){
+  const c=document.getElementById('doc-canvas');
+  if(_docCtx&&c){_docCtx.clearRect(0,0,c.width,c.height);_docVacio=true;}
+}
+function descargarDocParaImprimir(){
+  const doc = STATE._docFirmando;
+  if(!doc) return;
+  // Llamar a la función de impresión propia de ese documento
+  if(doc.imprimirFn && typeof window[doc.imprimirFn]==='function'){
+    window[doc.imprimirFn](doc.numero.replace(/^[A-Z]+-/,'').toLowerCase());
+  } else {
+    toast('Documento listo','ok');
+  }
+}
+let _docEscaneoTmp = null;
+function docEscaneoSeleccionado(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 6*1024*1024){toast('El archivo no debe superar 6 MB','err');return;}
+  const reader = new FileReader();
+  reader.onload = e=>{
+    _docEscaneoTmp = {nombre:file.name, data:e.target.result, tipo:file.type};
+    const n=document.getElementById('doc-scan-nombre'); if(n) n.textContent = file.name+' ('+(file.size/1024).toFixed(0)+' KB)';
+    const b=document.getElementById('doc-btn-scan'); if(b){b.disabled=false; b.style.opacity='1';}
+  };
+  reader.readAsDataURL(file);
+}
+function guardarFirmaDoc(modo){
+  const doc = STATE._docFirmando;
+  if(!doc) return;
+  if(!STATE.documentosFirmados) STATE.documentosFirmados={};
+  let firmaData=null, escaneo=null;
+  if(modo==='digital'){
+    if(_docPngData){
+      firmaData = _docPngData;  // usó PNG subido
+    } else {
+      const canvas=document.getElementById('doc-canvas');
+      if(_docVacio){toast('El colaborador debe firmar o subir su PNG','err');return;}
+      firmaData = canvas.toDataURL('image/png');
+    }
+  } else if(modo==='escaneado'){
+    if(!_docEscaneoTmp){toast('Carga el documento escaneado','err');return;}
+    escaneo = _docEscaneoTmp;
+  }
+  STATE.documentosFirmados[doc.numero] = {firma:firmaData, escaneo, fecha:new Date().toISOString(), modo, tipo:doc.tipo, colaborador:doc.colaborador};
+  _docEscaneoTmp = null; _docPngData = null;
+  sincronizarConOficina();
+  closeSheet();
+  // Refrescar la vista actual
+  if(STATE.current) go(STATE.current, false);
+  registrarActividadTablet('Documento firmado', (doc?doc.tipo+' '+doc.numero:'Documento')+' · '+(modo==='digital'?'firma digital':modo==='escaneado'?'escaneado':'impreso'));
+  toast(modo==='digital'?'Firma digital registrada ✓':modo==='escaneado'?'Documento firmado cargado ✓':'Firmado ✓','ok');
+}
+let _docPngData = null;
 // Genera el HTML de un comprobante de pago para un trabajador
 function htmlComprobantePago(t){
   const e = STATE.config.empresa;
@@ -5118,7 +6211,7 @@ function cssDocumento(){
 // Abre una nueva ventana con los documentos para imprimir
 function imprimirFichasCSS(target){
   const trabs = target === 'todos'
-    ? STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor')
+    ? STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor')
     : STATE.colaboradores.filter(c => c.id === target);
   if (trabs.length === 0){toast('No hay trabajadores','err');return;}
   const docs = trabs.map(t => htmlFichaCSS(t)).join('');
@@ -5127,14 +6220,17 @@ function imprimirFichasCSS(target){
 }
 function imprimirComprobantes(target){
   const trabs = target === 'todos'
-    ? STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor')
+    ? STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor')
     : STATE.colaboradores.filter(c => c.id === target);
   if (trabs.length === 0){toast('No hay trabajadores','err');return;}
   const docs = trabs.map(t => htmlComprobantePago(t)).join('');
   const titulo = target === 'todos' ? `Comprobantes de pago (${trabs.length})` : `Comprobante · ${trabs[0].nombre}`;
   abrirVentanaImpresion(titulo, docs);
 }
+let _capturarDoc = null; // si está activo, captura el HTML del documento en vez de imprimirlo
 function abrirVentanaImpresion(titulo, htmlDocs){
+  // Modo captura: para mostrar vista previa antes de firmar (no abre ventana de impresión)
+  if(_capturarDoc){ _capturarDoc.html = htmlDocs; _capturarDoc.titulo = titulo; return; }
   const w = window.open('', '_blank');
   if (!w){toast('Permite ventanas emergentes para imprimir','err');return;}
   w.document.open();
@@ -5152,6 +6248,18 @@ ${htmlDocs}
 </body></html>`);
   w.document.close();
   toast('Documento listo para imprimir ✓','ok');
+}
+// Genera el HTML de un documento de campo usando su función de impresión, sin imprimirlo
+function capturarHtmlDocumento(imprimirFn, idReal){
+  _capturarDoc = {html:'', titulo:''};
+  try{
+    if(typeof window[imprimirFn]==='function'){
+      window[imprimirFn](idReal);
+    }
+  }catch(e){}
+  const cap = _capturarDoc;
+  _capturarDoc = null;
+  return cap;
 }
 
 /* ═══════════════════════════════════════════ EXPORTAR A PDF / IMPRIMIR GLOBAL ═══════════════════════════════════════════ */
@@ -5317,7 +6425,7 @@ function exportarSeccionPDF(seccion){
       <div class="doc-page">
         ${headerEmpresa}
         <h1 class="doc-title">Reporte de asistencia diaria</h1>
-        <div class="doc-meta" style="text-transform:capitalize">${fechaTxt} · Capataz: ${STATE.user?.nombre||'—'} · Almuerzo: ${data.almuerzoMinutos||60} min</div>
+        <div class="doc-meta" style="text-transform:capitalize">${fechaTxt} · Jefe de campo: ${STATE.user?.nombre||'—'} · Almuerzo: ${data.almuerzoMinutos||60} min</div>
 
         <div class="doc-section">
           <div class="doc-section-title">Detalle de asistencia</div>
@@ -5337,7 +6445,7 @@ function exportarSeccionPDF(seccion){
           <div class="doc-firma">
             <div class="doc-firma-img">${firmaCap ? `<img src="${firmaCap}">` : ''}</div>
             <div class="doc-firma-line"></div>
-            <div class="doc-firma-l">${capataz?capataz.nombre:'Capataz'}<br>${capataz?capataz.cargo:''}${capataz?.cedula?'<br>Céd: '+capataz.cedula:''}</div>
+            <div class="doc-firma-l">${capataz?capataz.nombre:'Jefe de campo'}<br>${capataz?capataz.cargo:''}${capataz?.cedula?'<br>Céd: '+capataz.cedula:''}</div>
           </div>
           <div class="doc-firma">
             <div class="doc-firma-img"></div>
@@ -5414,9 +6522,12 @@ function techAgregarTractor(){
 }
 function techQuitarTractor(id){
   if (!confirm(`¿Eliminar tractor ${id}?`)) return;
+  const t = STATE.tractores.find(x=>x.id===id);
+  if(t) tabletAPapelera('tractor', 'Tractor '+id, t);
   STATE.tractores = STATE.tractores.filter(t=>t.id!==id);
+  guardarEstado();
   openSheet('tech-tractores');
-  toast(`Tractor ${id} eliminado`,'ok');
+  toast(`Tractor ${id} movido a papelera`,'ok');
 }
 function techAgregarCarreta(){
   const id = document.getElementById('nueva-carreta-id').value.trim().toUpperCase();
@@ -5428,9 +6539,12 @@ function techAgregarCarreta(){
 }
 function techQuitarCarreta(id){
   if (!confirm(`¿Eliminar carreta ${id}?`)) return;
+  const cr = STATE.carretas.find(x=>x.id===id);
+  if(cr) tabletAPapelera('carreta', 'Carreta '+id, cr);
   STATE.carretas = STATE.carretas.filter(c=>c.id!==id);
+  guardarEstado();
   openSheet('tech-carretas');
-  toast(`Carreta ${id} eliminada`,'ok');
+  toast(`Carreta ${id} movida a papelera`,'ok');
 }
 function techToggleCarreta(id){
   const c = STATE.carretas.find(x=>x.id===id);
@@ -5447,12 +6561,15 @@ function techAgregarChapeadora(){
 }
 function techQuitarChapeadora(id){
   if (!confirm(`¿Eliminar ${id}?`)) return;
+  const ch = STATE.chapeadoras.find(x=>x.id===id);
+  if(ch) tabletAPapelera('chapeadora', 'Chapeadora '+id, ch);
   STATE.chapeadoras = STATE.chapeadoras.filter(c=>c.id!==id);
+  guardarEstado();
   openSheet('tech-chapeadoras');
-  toast(`${id} eliminada`,'ok');
+  toast(`${id} movida a papelera`,'ok');
 }
 function techEntrarComoCapataz(who){
-  // Mantener que es modo técnico pero "verse" como capataz
+  // Mantener que es modo técnico pero "verse" como jefe de campo
   closeSheet();
   doLogin(who);
   toast(`Vista como ${who==='gabriel'?'Gabriel':'Julio'} (modo técnico)`,'ok');
@@ -5721,22 +6838,12 @@ function renderAlertas(){
 }
 
 /* ═══════════════════════════════════════════ CUADRILLAS - HELPERS ═══════════════════════════════════════════ */
-// Devuelve los IDs de trabajadores que están en alguna cuadrilla del capataz dado
+// Devuelve los IDs de trabajadores que están en alguna cuadrilla del jefe de campo dado
 function miembrosDeCapataz(capatazId){
   const cuads = STATE.cuadrillas[capatazId] || [];
   const ids = new Set();
   cuads.forEach(c => c.miembros.forEach(m => ids.add(m)));
   return [...ids];
-}
-// Devuelve true si un trabajador pertenece a la cuadrilla principal o temática de otro capataz
-function esDelOtroCapataz(trabId, miCapatazId){
-  const otroId = miCapatazId==='gc' ? 'jc' : 'gc';
-  return miembrosDeCapataz(otroId).includes(trabId);
-}
-// Devuelve true si un trabajador está prestado a mí
-function estaPrestadoAmi(trabId){
-  const p = STATE.prestamos[trabId];
-  return p && p.prestadoA === STATE.user.id;
 }
 // Devuelve la cuadrilla activa del usuario actual
 function cuadrillaActual(){
@@ -5744,9 +6851,9 @@ function cuadrillaActual(){
   if(!cid) return null;
   return (STATE.cuadrillas[STATE.user.id]||[]).find(c=>c.id===cid);
 }
-// Devuelve los miembros visibles para el capataz actual:
+// Devuelve los miembros visibles para el jefe de campo actual:
 // - Los de su cuadrilla activa (asignables)
-// - Los del otro capataz (bloqueados/semi-transparentes salvo que estén prestados)
+// - Los del otro jefe de campo (bloqueados/semi-transparentes salvo que estén prestados)
 function visiblesParaAsistencia(){
   const cuad = cuadrillaActual();
   const miosIds = cuad ? cuad.miembros : [];
@@ -5788,14 +6895,162 @@ function renderAsistencia(){
   else renderAsistQuincena();
 }
 function swAsistTab(tab){
-  ['hoy','quincena'].forEach(t => {
+  ['hoy','quincena','stats'].forEach(t => {
     const b = document.getElementById('as-tab-'+t);
     if (b) b.classList.toggle('on', t===tab);
     const p = document.getElementById('as-pant-'+t);
     if (p) p.style.display = t===tab ? 'block' : 'none';
   });
   if (tab === 'hoy') renderAsistHoy();
+  else if (tab === 'stats') renderInasistencias();
   else renderAsistQuincena();
+}
+let _rangoInasist = 'qui';
+function setRangoInasist(r){
+  _rangoInasist = r;
+  ['qui','mes','ano'].forEach(x=>{
+    const b=document.getElementById('ina-r-'+x);
+    if(b) b.classList.toggle('on', x===r);
+  });
+  renderInasistencias();
+}
+// Calcula inasistencias justificadas/injustificadas en el rango elegido
+function renderInasistencias(){
+  const cont = document.getElementById('as-stats-cont');
+  if(!cont) return;
+  const hoy = new Date();
+  let desde;
+  if(_rangoInasist==='qui'){
+    // quincena actual: 1-15 o 16-fin
+    desde = hoy.getDate()<=15 ? new Date(hoy.getFullYear(),hoy.getMonth(),1) : new Date(hoy.getFullYear(),hoy.getMonth(),16);
+  } else if(_rangoInasist==='mes'){
+    desde = new Date(hoy.getFullYear(),hoy.getMonth(),1);
+  } else {
+    desde = new Date(hoy.getFullYear(),0,1);
+  }
+  // Recorrer el historial de asistencia y contar ausencias
+  const hist = STATE.asistenciaHist || {};
+  const diaria = STATE.asistenciaDiaria || {};
+  const todas = Object.assign({}, hist, diaria);
+  let justificadas=0, injustificadas=0;
+  const porColab = {}; // {tid:{nombre, just, injust}}
+  // Registro de días-ausencia ya contados, para no duplicar con incapacidades: clave "tid|fecha"
+  const diasContados = new Set();
+  Object.keys(todas).forEach(fecha=>{
+    const f = new Date(fecha);
+    if(isNaN(f) || f < desde || f > hoy) return;
+    const dia = todas[fecha];
+    const trabs = dia.trabajadores || dia;
+    Object.keys(trabs).forEach(tid=>{
+      const reg = trabs[tid];
+      if(!reg || typeof reg!=='object') return;
+      if(reg.tipo==='a' || reg.tipo==='ausente'){
+        const t = STATE.colaboradores.find(c=>c.id===tid);
+        const nombre = t?t.nombre:tid;
+        if(!porColab[tid]) porColab[tid]={nombre, just:0, injust:0};
+        diasContados.add(tid+'|'+fecha.slice(0,10));
+        if(reg.justificada){ justificadas++; porColab[tid].just++; }
+        else { injustificadas++; porColab[tid].injust++; }
+      }
+    });
+  });
+  // CONECTAR INCAPACIDADES: cada día cubierto por una incapacidad cuenta como ausencia JUSTIFICADA
+  // (sin duplicar los días que ya estaban marcados como ausencia en la asistencia diaria)
+  (STATE.incapacidades||[]).forEach(inc=>{
+    if(!inc.desde || !inc.hasta) return;
+    const tid = inc.trabajadorId;
+    const t = STATE.colaboradores.find(c=>c.id===tid);
+    const nombre = t ? t.nombre : (inc.nombre||tid);
+    let d = new Date(inc.desde+'T00:00:00');
+    const fin = new Date(inc.hasta+'T00:00:00');
+    while(d <= fin){
+      // Solo contar días dentro del rango seleccionado y que no superen hoy
+      if(d >= desde && d <= hoy){
+        const claveISO = d.toISOString().slice(0,10);
+        const clave = tid+'|'+claveISO;
+        if(!diasContados.has(clave)){
+          diasContados.add(clave);
+          if(!porColab[tid]) porColab[tid]={nombre, just:0, injust:0};
+          justificadas++; porColab[tid].just++;
+        }
+      }
+      d.setDate(d.getDate()+1);
+    }
+  });
+  const total = justificadas+injustificadas;
+  const rangoTxt = _rangoInasist==='qui'?'esta quincena':_rangoInasist==='mes'?'este mes':'este año';
+  const colabList = Object.values(porColab).sort((a,b)=>(b.just+b.injust)-(a.just+a.injust));
+  cont.innerHTML = `
+    <div class="card card-body" style="background:linear-gradient(135deg,#1E40AF,#1D4ED8);color:#fff;margin-bottom:12px">
+      <div style="font-size:11px;color:#BFDBFE;text-transform:uppercase;letter-spacing:.05em;font-weight:700">Total de inasistencias · ${rangoTxt}</div>
+      <div style="font-size:30px;font-weight:800;margin-top:2px">${total}</div>
+    </div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="card card-body" style="border-left:4px solid #16a34a">
+        <div style="font-size:10px;color:var(--fg-mut);text-transform:uppercase;letter-spacing:.04em;font-weight:700">Justificadas</div>
+        <div style="font-size:26px;font-weight:800;color:#16a34a;margin-top:2px">${justificadas}</div>
+        <div style="font-size:10px;color:var(--fg-mut)">${total?Math.round(justificadas/total*100):0}% del total</div>
+      </div>
+      <div class="card card-body" style="border-left:4px solid #DC2626">
+        <div style="font-size:10px;color:var(--fg-mut);text-transform:uppercase;letter-spacing:.04em;font-weight:700">Injustificadas</div>
+        <div style="font-size:26px;font-weight:800;color:#DC2626;margin-top:2px">${injustificadas}</div>
+        <div style="font-size:10px;color:var(--fg-mut)">${total?Math.round(injustificadas/total*100):0}% del total</div>
+      </div>
+    </div>
+    ${total>0?`
+      <div class="card card-body" style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;margin-bottom:8px">Proporción</div>
+        <div style="display:flex;height:22px;border-radius:6px;overflow:hidden">
+          <div style="width:${justificadas/total*100}%;background:#16a34a"></div>
+          <div style="width:${injustificadas/total*100}%;background:#DC2626"></div>
+        </div>
+        <div class="flex" style="justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--fg-mut)">
+          <span><span style="display:inline-block;width:9px;height:9px;background:#16a34a;border-radius:2px;vertical-align:-1px"></span> Justificadas</span>
+          <span><span style="display:inline-block;width:9px;height:9px;background:#DC2626;border-radius:2px;vertical-align:-1px"></span> Injustificadas</span>
+        </div>
+      </div>
+    `:''}
+    <div class="section-label" style="margin-top:0">Por colaborador</div>
+    ${colabList.length?colabList.map(c=>`
+      <div class="card card-body" style="margin-bottom:8px;padding:11px 13px">
+        <div class="flex" style="align-items:center;gap:8px">
+          <div style="flex:1;font-size:13px;font-weight:600">${c.nombre}</div>
+          ${c.just?`<span class="chip chip-g">${c.just} justif.</span>`:''}
+          ${c.injust?`<span class="chip chip-r">${c.injust} injustif.</span>`:''}
+        </div>
+      </div>`).join('')
+      : '<div class="empty" style="padding:30px"><i class="mi">event_available</i><div class="empty-t">Sin inasistencias en este período</div><div class="empty-s">¡Buena asistencia del equipo!</div></div>'}
+    ${total>0?`<button class="btn btn-outline" style="margin-top:12px" onclick="exportarInasistenciasTablet()"><i class="mi sm">download</i> Exportar reporte</button>`:''}
+    <div style="font-size:10.5px;color:var(--fg-mut);text-align:center;margin-top:12px">Las incapacidades registradas cuentan automáticamente como ausencias justificadas. Las demás ausencias se marcan al tomar la asistencia.</div>
+  `;
+  // Guardar los datos calculados para la exportación
+  STATE._inasistData = {justificadas, injustificadas, total, colabList, desde, hoy};
+}
+function exportarInasistenciasTablet(){
+  const d = STATE._inasistData;
+  if(!d){toast('No hay datos para exportar','err');return;}
+  const rangoTxt = _rangoInasist==='qui'?'Quincena':_rangoInasist==='mes'?'Mes':'Año';
+  const cuad = cuadrillaActual() ? cuadrillaActual().nombre : '';
+  let csv = '\uFEFF';
+  csv += `"Agropecuaria Chiriquí, S.A."\r\n`;
+  csv += `"Reporte de inasistencias - ${rangoTxt}"\r\n`;
+  if(cuad) csv += `"Cuadrilla: ${cuad}"\r\n`;
+  csv += `"Del ${d.desde.toLocaleDateString('es-PA')} al ${d.hoy.toLocaleDateString('es-PA')}"\r\n\r\n`;
+  csv += `"Total de inasistencias";"${d.total}"\r\n`;
+  csv += `"Justificadas (incluye incapacidades)";"${d.justificadas}"\r\n`;
+  csv += `"Injustificadas";"${d.injustificadas}"\r\n\r\n`;
+  csv += `"Colaborador";"Justificadas";"Injustificadas";"Total"\r\n`;
+  d.colabList.forEach(c=>{
+    csv += `"${c.nombre}";"${c.just}";"${c.injust}";"${c.just+c.injust}"\r\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Inasistencias_${rangoTxt}.csv`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  toast('Reporte exportado ✓','ok');
 }
 function renderAsistHoy(){
   renderSelectorCuadrilla();
@@ -6249,7 +7504,7 @@ td,th {border:1px solid #999;padding:4px 8px;vertical-align:middle}
   <tr><td class="hdr-titulo" colspan="${fechas.length + 4}">REPORTE DE ASISTENCIA — QUINCENAL</td></tr>
   <tr>
     <td class="hdr-info" colspan="${Math.ceil((fechas.length + 4)/2)}">Período: ${periodoDesde} al ${periodoHasta}</td>
-    <td class="hdr-info" colspan="${Math.floor((fechas.length + 4)/2)}">Capataz: ${capataz?capataz.nombre:'—'} · Cuadrilla: ${cuad?cuad.nombre:'—'}</td>
+    <td class="hdr-info" colspan="${Math.floor((fechas.length + 4)/2)}">Jefe de campo: ${capataz?capataz.nombre:'—'} · Cuadrilla: ${cuad?cuad.nombre:'—'}</td>
   </tr>
   <tr><td colspan="${fechas.length + 4}" style="height:6pt;border:none"></td></tr>
 
@@ -6312,7 +7567,7 @@ td,th {border:1px solid #999;padding:4px 8px;vertical-align:middle}
 
   <tr>
     <td class="firma-linea" colspan="${Math.ceil((fechas.length + 4)/2)}">
-      ${capataz?capataz.nombre:'Capataz'}<br>
+      ${capataz?capataz.nombre:'Jefe de campo'}<br>
       <span style="font-weight:normal;font-size:8pt">${capataz?capataz.cargo:''}${capataz?.cedula?' · Céd: '+capataz.cedula:''}</span>
     </td>
     <td class="firma-linea" colspan="${Math.floor((fechas.length + 4)/2)}">
@@ -6352,13 +7607,6 @@ function enviarAsistencia(){
   renderAsistHoy();
 }
 // La jornada cerrada no se puede reabrir desde la app
-// (queda como función legacy que se usa si no está cerrada todavía)
-function reabrirAsistencia(){
-  const data = asistDelDia();
-  if (data.cerrada){toast('Jornada cerrada — no se puede reabrir','err');return;}
-  data.enviada = false;
-  renderAsistHoy();
-}
 
 function renderSelectorCuadrilla(){
   const cont = document.getElementById('cuad-selector');
@@ -6564,7 +7812,7 @@ function imprimirPermisoLaboral(permId){
     telefono: e.telefono || '6500-1696'
   };
   const fechaTxt = new Date(p.fecha + 'T12:00:00').toLocaleDateString('es-PA', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-  // Firma del capataz: prioriza la actual en su ficha
+  // Firma del jefe de campo: prioriza la actual en su ficha
   const firmaCapAct = capataz?.firmaDigital || p.firmaCapataz || null;
   const html = `
     <div class="doc-page">
@@ -6602,14 +7850,14 @@ function imprimirPermisoLaboral(permId){
       <div class="doc-section">
         <div class="doc-section-title">Declaración</div>
         <p>El colaborador arriba identificado solicita y le es autorizado retirarse de sus labores antes de la hora habitual de salida, por el motivo descrito en este documento. El colaborador declara que el motivo es veraz y se compromete a justificar formalmente esta ausencia conforme lo establezca el reglamento interno de la empresa y la legislación laboral vigente (Ley 81 de la República de Panamá).</p>
-        <p style="margin-top:8px">La empresa, a través del capataz que autoriza, registra esta salida con fines administrativos y de control de jornada.</p>
+        <p style="margin-top:8px">La empresa, a través del jefe de campo que autoriza, registra esta salida con fines administrativos y de control de jornada.</p>
       </div>
 
       <div class="doc-firmas">
         <div class="doc-firma">
           <div class="doc-firma-img">${p.firmaColaborador ? `<img src="${p.firmaColaborador}">` : ''}</div>
           <div class="doc-firma-line"></div>
-          <div class="doc-firma-l">Firma del colaborador<br>${t?t.nombre:''}${t?'<br>Céd: '+(t.cedula||'—'):''}</div>
+          <div class="doc-firma-l">${t?t.nombre:'Colaborador'}<br><span style="font-weight:400">Colaborador${t?' · Céd. '+(t.cedula||'—'):''}</span></div>
         </div>
         <div class="doc-firma">
           <div class="doc-firma-img">${firmaCapAct ? `<img src="${firmaCapAct}">` : ''}</div>
@@ -6784,6 +8032,9 @@ function guardarEstado(){
       cuadrillas: STATE.cuadrillas,
       cuadrillaActiva: STATE.cuadrillaActiva,
       solicitudes: STATE.solicitudes,
+      incapacidades: STATE.incapacidades,
+      papelera: STATE.papelera,
+      bitacora: STATE.bitacora,
       prestamos: STATE.prestamos,
       tractores: STATE.tractores,
       carretas: STATE.carretas,
@@ -6820,10 +8071,6 @@ function resetearTodo(){
 setInterval(() => {
   if (STATE.current !== 'login' && STATE.current !== 'tech-login') guardarEstado();
 }, 30000);
-function showAsistStats(){
-  // Redirigido a estadísticas centralizadas
-  go("estadisticas");
-}
 
 /* ═══════════════════════════════════════════ REPORTES DE ASISTENCIA ═══════════════════════════════════════════ */
 // Devuelve datos agregados para un rango de fechas
@@ -6883,11 +8130,6 @@ function calcReportePersona(trabId, rangoDias){
   return {p,t,aj,ai,total:diasMarcados,tasa,ausencias};
 }
 
-function fmtFecha(s){
-  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  const d = new Date(s+'T12:00:00');
-  return d.getDate() + ' ' + meses[d.getMonth()];
-}
 function fmtFechaCompleta(s){
   const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   const d = new Date(s+'T12:00:00');
@@ -6944,7 +8186,7 @@ function goTStep(n){
 }
 function renderColabs(filtro){
   const lista=document.getElementById('colabs-list');
-  const filtrados=STATE.colaboradores.filter(c=>!c.cargo.startsWith('Capataz') && c.cargo!=='Conductor' && c.nombre.toLowerCase().includes(filtro.toLowerCase()));
+  const filtrados=STATE.colaboradores.filter(c=>!c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor' && c.nombre.toLowerCase().includes(filtro.toLowerCase()));
   lista.innerHTML=filtrados.map(c=>{
     const sel=STATE.selected.personas.includes(c.id);
     return `<div class="col-row ${sel?'sel':''}" onclick="togColab('${c.id}')">
@@ -7253,8 +8495,10 @@ function guardarConductorEditado(cid){
 function eliminarConductor(cid){
   const c = (STATE.conductoresExternos||[]).find(x => x.id === cid);
   if (!c) return;
-  if (!confirm(`¿Eliminar a ${c.nombre}?\n\nEsto lo quita del dropdown de conductores. Los registros pasados no se afectan.`)) return;
+  if (!confirm(`¿Eliminar a ${c.nombre}?\n\nSe podrá recuperar desde la papelera del técnico. Los registros pasados no se afectan.`)) return;
+  tabletAPapelera('conductor', 'Conductor '+c.nombre, c);
   STATE.conductoresExternos = STATE.conductoresExternos.filter(x => x.id !== cid);
+  guardarEstado();
   // Quitar del dropdown si existe
   const sel = document.getElementById('conductor-sel');
   if (sel){
@@ -7372,10 +8616,72 @@ function cerrarViaje(){
 
 /* ═══════════════════════════════════════════ PERSONAL ═══════════════════════════════════════════ */
 function renderPersonal(){
-  const caps=STATE.colaboradores.filter(c=>c.cargo.startsWith('Capataz'));
+  const caps=STATE.colaboradores.filter(c=>c.cargo.startsWith('Jefe de campo'));
   const cond=STATE.colaboradores.filter(c=>c.cargo==='Conductor');
-  const trabs=STATE.colaboradores.filter(c=>!c.cargo.startsWith('Capataz') && c.cargo!=='Conductor');
-  document.getElementById('capataces-list').innerHTML=caps.map(c=>`
+  const trabs=STATE.colaboradores.filter(c=>!c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
+  // Aviso de solicitudes pendientes/resueltas de este jefe
+  const avisoEl = document.getElementById('solicitudes-aviso');
+  if(avisoEl){
+    const sols = (STATE.solicitudes||[]);
+    const pend = sols.filter(s=>s.estado==='pendiente');
+    const recientes = sols.filter(s=>s.estado!=='pendiente').slice(0,3);
+    let html='';
+    if(pend.length){
+      html += `<div class="card card-body" style="background:linear-gradient(135deg,#FEF3C7,#FFFBEB);border:1px solid #FCD34D;margin-bottom:12px">
+        <div class="flex" style="gap:10px;align-items:center">
+          <i class="mi" style="color:#D97706;font-size:22px">hourglass_top</i>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#92400E">${pend.length} solicitud${pend.length!==1?'es':''} esperando aprobación</div>
+          <div style="font-size:11px;color:#92400E">El administrador debe aprobar los cambios de personal antes de aplicarse.</div></div>
+        </div>
+        ${pend.map(s=>`<div style="font-size:11.5px;color:#78350F;margin-top:6px;padding-left:32px">• ${s.resumen}</div>`).join('')}
+      </div>`;
+    }
+    recientes.forEach(s=>{
+      const ap = s.estado==='aprobada';
+      html += `<div class="card card-body" style="background:${ap?'#F0FDF4':'#FEF2F2'};border:1px solid ${ap?'#86EFAC':'#FECACA'};margin-bottom:8px;padding:10px 12px">
+        <div class="flex" style="gap:8px;align-items:center">
+          <i class="mi sm" style="color:${ap?'#16a34a':'#dc2626'}">${ap?'check_circle':'cancel'}</i>
+          <div style="flex:1;font-size:12px;color:${ap?'#166534':'#991B1B'}"><b>${ap?'Aprobada':'Rechazada'}:</b> ${s.resumen}</div>
+          <button onclick="descartarAvisoSolicitud('${s.id}')" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:0"><i class="mi sm">close</i></button>
+        </div>
+      </div>`;
+    });
+    // Aviso de CONTRATOS POR VENCER (solo lectura — la fecha solo se cambia desde la oficina)
+    const hoy0 = new Date(); hoy0.setHours(0,0,0,0);
+    const porVencer = STATE.colaboradores.filter(c=>{
+      if(c.cargo && (c.cargo.startsWith('Jefe de campo')||c.cargo==='Conductor')) return false;
+      if(!c.fechaFinContrato) return false;
+      const fin = new Date(c.fechaFinContrato+'T00:00:00');
+      if(isNaN(fin)) return false;
+      const dias = Math.round((fin-hoy0)/(1000*60*60*24));
+      return dias<=30;
+    }).map(c=>{
+      const fin = new Date(c.fechaFinContrato+'T00:00:00');
+      return {c, dias: Math.round((fin-hoy0)/(1000*60*60*24)), fin};
+    }).sort((a,b)=>a.dias-b.dias);
+    if(porVencer.length){
+      html += `<div class="card card-body" style="border:1px solid #FCD34D;margin-bottom:12px">
+        <div class="flex" style="gap:8px;align-items:center;margin-bottom:8px">
+          <i class="mi" style="color:#D97706;font-size:20px">event_busy</i>
+          <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#92400E">${porVencer.length} contrato${porVencer.length!==1?'s':''} por vencer</div>
+          <div style="font-size:10.5px;color:#92400E">Aviso de la oficina. La renovación se gestiona desde la administración.</div></div>
+        </div>
+        ${porVencer.map(v=>{
+          const venc = v.dias<0;
+          const urgente = v.dias<=15;
+          const col = (venc||urgente)?'#DC2626':'#D97706';
+          const bg = (venc||urgente)?'#FEE2E2':'#FEF3C7';
+          const txt = venc?`Venció hace ${Math.abs(v.dias)}d`:(v.dias===0?'Vence hoy':`Vence en ${v.dias}d`);
+          return `<div class="flex" style="gap:8px;align-items:center;padding:6px 0;border-top:1px solid #FDE68A">
+            <div style="flex:1;font-size:12px;font-weight:600">${v.c.nombre}</div>
+            <span style="font-size:10.5px;font-weight:700;color:${col};background:${bg};padding:2px 8px;border-radius:10px">${txt}</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+    avisoEl.innerHTML = html;
+  }
+  document.getElementById('jefes de campo-list').innerHTML=caps.map(c=>`
     <div class="card-row clickable" onclick="openSheet('cap-editar-colab-${c.id}')">
       <div class="av" style="background:${c.color};color:${c.colorT}">${c.ini}</div>
       <div style="flex:1"><div class="label">${c.nombre}</div><div class="sub">${c.codigo||'—'} · ${c.cargo}</div></div>
@@ -7407,12 +8713,7 @@ function renderPersonal(){
           <div style="text-align:right"><div style="font-size:10px;color:#9FE1CB;text-transform:uppercase;letter-spacing:.05em;font-weight:700">Horas extras mes</div><div style="font-size:28px;font-weight:800">${totalHE.toFixed(1)}h</div></div>
         </div>
       </div>
-      <button class="btn btn-green" style="margin-bottom:12px" onclick="openSheet('colab-nuevo')"><i class="mi sm">person_add</i> Agregar nuevo colaborador</button>
-      <div class="section-label" style="margin-top:0">Imprimir documentos (todos)</div>
-      <div class="grid2" style="margin-bottom:12px">
-        <button class="btn-sm" style="background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD;padding:11px 8px;justify-content:center" onclick="imprimirFichasCSS('todos')"><i class="mi sm">print</i> Fichas CSS</button>
-        <button class="btn-sm" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC;padding:11px 8px;justify-content:center" onclick="imprimirComprobantes('todos')"><i class="mi sm">receipt_long</i> Comprobantes</button>
-      </div>`;
+      <button class="btn btn-green" style="margin-bottom:12px" onclick="openSheet('colab-nuevo')"><i class="mi sm">person_add</i> Agregar nuevo colaborador</button>`;
   }
 }
 
@@ -7601,10 +8902,40 @@ function toast(msg,type='ok'){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>{t.className='toast '+type;},2400);
 }
+/* ════════ BITÁCORA Y ADVERTENCIAS (tablet) ════════ */
+// Registra una acción del jefe de campo (queda en su bitácora y se envía a la oficina)
+function registrarActividadTablet(accion, detalle){
+  try{
+    if(!STATE.bitacora) STATE.bitacora=[];
+    STATE.bitacora.unshift({
+      fecha: new Date().toISOString(),
+      usuario: STATE.user?.nombre || 'Jefe de campo',
+      jefeId: STATE.user?.id || 'tablet',
+      rol: STATE.user?.cargo || 'Jefe de campo',
+      accion: accion||'',
+      detalle: detalle||''
+    });
+    if(STATE.bitacora.length > 500) STATE.bitacora = STATE.bitacora.slice(0,500);
+    if(typeof guardarEstado==='function') guardarEstado();
+    if(typeof sincronizarConOficina==='function') sincronizarConOficina();
+  }catch(e){}
+}
+// Advierte al jefe de campo cuando intenta algo que no le compete
+function advertirJefe(){
+  toast('Esta acción no le compete. Por favor consulte con el administrador.','err');
+  registrarActividadTablet('Intento bloqueado', 'Intentó una acción reservada al administrador');
+}
+// Quita de la vista una solicitud ya resuelta (aprobada/rechazada)
+function descartarAvisoSolicitud(id){
+  STATE.solicitudes = (STATE.solicitudes||[]).filter(s => s.id!==id || s.estado==='pendiente');
+  guardarEstado();
+  renderPersonal();
+}
 
 /* ═══════════════════════════════════════════ SHEET (bottom modal) ═══════════════════════════════════════════ */
 function openSheet(id){
   const c=document.getElementById('sheet-content');
+  STATE._sheetActual = id;
   let html='';
   if(id==='logout'){
     html=`
@@ -7751,7 +9082,7 @@ function openSheet(id){
     else {
       const otroId = STATE.user.id==='gc' ? 'jc' : 'gc';
       const disponibles = STATE.colaboradores.filter(c =>
-        !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor');
+        !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
       const otrosIds = miembrosDeCapataz(otroId);
       html = `
         <div style="margin-bottom:12px">
@@ -7850,9 +9181,9 @@ function openSheet(id){
         <button class="btn btn-outline" onclick="closeSheet()">Cancelar</button>
       </div>`;
   } else if(id==='tech-reset-passwords'){
-    const users = STATE.colaboradores.filter(c => c.cargo.startsWith('Capataz') || c.cargo==='Conductor');
+    const users = STATE.colaboradores.filter(c => c.cargo.startsWith('Jefe de campo') || c.cargo==='Conductor');
     html = `
-      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">key</i> Resetear contraseñas</div><div style="font-size:11px;color:#999">Asigna nueva contraseña a capataces o conductor</div></div>
+      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">key</i> Resetear contraseñas</div><div style="font-size:11px;color:#999">Asigna nueva contraseña a jefes de campo o conductor</div></div>
       ${users.map(u => `
         <div class="card card-body" style="margin-bottom:10px">
           <div class="flex" style="margin-bottom:10px">
@@ -7864,12 +9195,12 @@ function openSheet(id){
         </div>
       `).join('')}
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
-  } else if(id==='tech-editar-capataces'){
-    const users = STATE.colaboradores.filter(c => c.cargo.startsWith('Capataz') || c.cargo==='Conductor');
+  } else if(id==='tech-editar-jefes de campo'){
+    const users = STATE.colaboradores.filter(c => c.cargo.startsWith('Jefe de campo') || c.cargo==='Conductor');
     html = `
-      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">badge</i> Capataces y conductor</div><div style="font-size:11px;color:#999">${users.length} usuarios · gestionar tablets</div></div>
+      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">badge</i> Jefes de campo y conductor</div><div style="font-size:11px;color:#999">${users.length} usuarios · gestionar tablets</div></div>
 
-      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i> <div><strong>Cada capataz = 1 tablet.</strong> Para habilitar una tablet nueva, crea un nuevo capataz aquí. La app se sincroniza automáticamente entre todas las tablets.</div></div>
+      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i> <div><strong>Cada capataz = 1 tablet.</strong> Para habilitar una tablet nueva, crea un nuevo jefe de campo aquí. La app se sincroniza automáticamente entre todas las tablets.</div></div>
 
       <button class="btn btn-green" style="margin-bottom:12px" onclick="openSheet('tech-nuevo-capataz')"><i class="mi sm">person_add</i> Agregar nuevo capataz/usuario</button>
 
@@ -7905,7 +9236,7 @@ function openSheet(id){
         <div class="field"><label>Nombre completo *</label><input type="text" id="nc-nombre" placeholder="Ej: Ana Pérez"></div>
         <div class="field"><label>Cédula</label><input type="text" id="nc-cedula" placeholder="Ej: 4-123-456"></div>
         <div class="field"><label>Cargo *</label><select id="nc-cargo">
-          <option>Capataz 3</option><option>Capataz 4</option><option>Capataz 5</option>
+          <option>Jefe de campo 3</option><option>Jefe de campo 4</option><option>Jefe de campo 5</option>
           <option>Supervisor</option><option>Conductor</option><option>Administrador</option>
         </select></div>
         <div class="field"><label>Teléfono</label><input type="text" id="nc-tel" placeholder="6500-XXXX"></div>
@@ -7916,10 +9247,10 @@ function openSheet(id){
         </select></div>
         <div class="alert alert-b"><i class="mi">info</i> <div>Al crear el usuario se generará un código automático y se podrá vincular una tablet inmediatamente. Cada tablet puede tener su propia apariencia y firma digital.</div></div>
         <button class="btn btn-green" onclick="techCrearCapataz()"><i class="mi sm">check</i> Crear usuario</button>
-        <button class="btn btn-outline" onclick="openSheet('tech-editar-capataces')">Cancelar</button>
+        <button class="btn btn-outline" onclick="openSheet('tech-editar-jefes de campo')">Cancelar</button>
       </div>`;
   } else if(id==='tech-trabajadores'){
-    const trabs = STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor');
+    const trabs = STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
     html = `
       <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">group</i> Gestión de trabajadores</div><div style="font-size:11px;color:#999">${trabs.length} trabajadores · toca para editar</div></div>
 
@@ -8008,7 +9339,7 @@ function openSheet(id){
   } else if(id==='tech-sucursales'){
     html = `
       <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">home_work</i> Sucursales</div><div style="font-size:11px;color:#999">Configura las sucursales · expandible</div></div>
-      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i> <div>Cada sucursal puede tener sus propios capataces, parcelas, tractores e inventario. Los datos se mantienen separados pero el técnico ve todo desde aquí.</div></div>
+      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i> <div>Cada sucursal puede tener sus propios jefes de campo, parcelas, tractores e inventario. Los datos se mantienen separados pero el técnico ve todo desde aquí.</div></div>
 
       <div class="section-label" style="margin-top:0">Sucursales activas</div>
       <div class="card" style="margin-bottom:12px">
@@ -8031,7 +9362,7 @@ function openSheet(id){
 
       <div class="card-body" style="background:#FEF3C7;border-radius:14px;border:1px solid #FDE68A;margin-bottom:10px">
         <div class="flex" style="margin-bottom:8px"><i class="mi" style="color:#92400E">add_circle</i><div style="font-size:13px;font-weight:700;color:#92400E">Agregar más sucursales</div></div>
-        <p style="font-size:11px;color:#78350F;line-height:1.5">Si la empresa abre más fincas a futuro, contacta a Kaes Security para configurar sucursales adicionales (4, 5, etc.). Cada sucursal nueva incluye su propio panel, capataces y datos independientes.</p>
+        <p style="font-size:11px;color:#78350F;line-height:1.5">Si la empresa abre más fincas a futuro, contacta a Kaes Security para configurar sucursales adicionales (4, 5, etc.). Cada sucursal nueva incluye su propio panel, jefes de campo y datos independientes.</p>
         <button class="btn-sm" style="background:#92400E;color:#fff;margin-top:8px" onclick="toast('Función disponible en producción','err')"><i class="mi sm">phone</i> Solicitar sucursal adicional</button>
       </div>
 
@@ -8087,6 +9418,8 @@ function openSheet(id){
         <button class="btn btn-green" onclick="techAgregarTarea()">+ Agregar tarea</button>
       </div>
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
+  } else if(id==='tech-papelera'){
+    html = renderPapeleraTabletHTML();
   } else if(id==='tech-tractores'){
     html = `
       <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">agriculture</i> Tractores</div><div style="font-size:11px;color:#999">${STATE.tractores.length} tractores</div></div>
@@ -8142,7 +9475,7 @@ function openSheet(id){
   } else if(id==='tech-firebase'){
     html = `
       <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">cloud</i> Firebase · Sincronización</div><div style="font-size:11px;color:#999">Multi-tablet en tiempo real</div></div>
-      <div class="alert alert-b" style="margin-bottom:10px"><i class="mi">info</i> <div>Los datos se sincronizan automáticamente entre las tablets de Gabriel y Julio. Cada capataz ve la misma información (asistencia, tareas, viajes, entregas, etc.).</div></div>
+      <div class="alert alert-b" style="margin-bottom:10px"><i class="mi">info</i> <div>Los datos se sincronizan automáticamente entre las tablets de Gabriel y Julio. Cada jefe de campo ve la misma información (asistencia, tareas, viajes, entregas, etc.).</div></div>
       <div class="card">
         <div class="card-row"><div class="ico" style="background:#DCFCE7">●</div><div style="flex:1"><div class="label">Estado</div><div class="sub" style="color:#166534">Conectado</div></div><span class="badge green">Online</span></div>
         <div class="card-row"><div class="ico" style="background:#DBEAFE"><i class="mi">refresh</i></div><div style="flex:1"><div class="label">Última sincronización</div><div class="sub">Hace 2 segundos</div></div></div>
@@ -8165,16 +9498,16 @@ function openSheet(id){
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
   } else if(id==='tech-ver-como'){
     html = `
-      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">visibility</i> Ver app como capataz</div><div style="font-size:11px;color:#999">Entrar al modo capataz desde la sesión técnica</div></div>
+      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">visibility</i> Ver app como capataz</div><div style="font-size:11px;color:#999">Entrar al modo jefe de campo desde la sesión técnica</div></div>
       <div class="card">
         <div class="card-row clickable" onclick="techEntrarComoCapataz('gabriel')">
           <div class="av" style="background:#DCFCE7;color:#166534">GC</div>
-          <div style="flex:1"><div class="label">Gabriel Chavarría</div><div class="sub">Capataz 1</div></div>
+          <div style="flex:1"><div class="label">Gabriel Chavarría</div><div class="sub">Jefe de campo 1</div></div>
           <span style="color:#bbb">›</span>
         </div>
         <div class="card-row clickable" onclick="techEntrarComoCapataz('julio')">
           <div class="av" style="background:#DBEAFE;color:#1E40AF">JC</div>
-          <div style="flex:1"><div class="label">Julio Chavarría</div><div class="sub">Capataz 2</div></div>
+          <div style="flex:1"><div class="label">Julio Chavarría</div><div class="sub">Jefe de campo 2</div></div>
           <span style="color:#bbb">›</span>
         </div>
       </div>
@@ -8606,14 +9939,14 @@ function openSheet(id){
   } else if(id==='tech-cfg-seguridad'){
     const s = STATE.config.seguridad;
     html = `
-      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">lock</i> Seguridad y acceso</div><div style="font-size:11px;color:#999">Control de autenticación de capataces</div></div>
+      <div style="margin-bottom:14px"><div style="font-size:15px;font-weight:700"><i class="mi">lock</i> Seguridad y acceso</div><div style="font-size:11px;color:#999">Control de autenticación de jefes de campo</div></div>
       <div class="card">
         <div class="tog-row" style="padding:14px">
           <div class="flex">
             <div class="ico" style="background:${s.loginConPassword?'#DCFCE7':'#FEF3C7'};font-size:14px">${s.loginConPassword?'<i class="mi">lock</i>':'<i class="mi">lock_open</i>'}</div>
             <div>
               <div class="label" style="font-size:13px">Login con contraseña</div>
-              <div class="sub">${s.loginConPassword?'Activo · capataces piden password':'Modo pruebas · entrada libre'}</div>
+              <div class="sub">${s.loginConPassword?'Activo · jefes de campo piden password':'Modo pruebas · entrada libre'}</div>
             </div>
           </div>
           <div class="tog ${s.loginConPassword?'on':''}" id="seg-pass" onclick="this.classList.toggle('on')"></div>
@@ -8652,7 +9985,7 @@ function openSheet(id){
         </div>
       </div>
 
-      <div class="alert alert-b" style="margin-top:10px"><i class="mi">info</i> <div><strong>Modo pruebas activo:</strong> los capataces entran solo tocando su tarjeta. Cuando quieras activar la contraseña, prende el toggle de arriba.</div></div>
+      <div class="alert alert-b" style="margin-top:10px"><i class="mi">info</i> <div><strong>Modo pruebas activo:</strong> los jefes de campo entran solo tocando su tarjeta. Cuando quieras activar la contraseña, prende el toggle de arriba.</div></div>
       <button class="btn btn-green" onclick="techGuardarSeguridad()"><i class="mi sm">check</i> Guardar configuración</button>
       <button class="btn btn-outline" onclick="closeSheet()">Cancelar</button>`;
   } else if(id==='marcar-salida'){
@@ -8730,7 +10063,7 @@ function openSheet(id){
         <div style="font-size:11px;color:#94a3b8;margin-top:2px">${c?c.nombre:''} acepta laborar ${temp?temp.horas:'?'}h extras</div>
       </div>
 
-      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i> <div>El colaborador debe firmar para autorizar las horas extras. Tu firma como capataz se agregará automáticamente.</div></div>
+      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i> <div>El colaborador debe firmar para autorizar las horas extras. Tu firma como jefe de campo se agregará automáticamente.</div></div>
 
       <div style="background:#f5f5f0;border-radius:12px;padding:2px;margin-bottom:10px">
         <canvas id="canvas-firma-he" style="display:block;width:100%;border-radius:10px;touch-action:none;background:#fff"></canvas>
@@ -8765,6 +10098,7 @@ function openSheet(id){
         </div>
       ` : ''}
       <button class="btn btn-green" onclick="imprimirAutorizacionHE('${he?.id||''}')"><i class="mi sm">print</i> Imprimir / Guardar PDF</button>
+      <button class="btn btn-outline" onclick="firmarDocumentoCampo('HE-${(he?.id||'').replace('he-','').slice(-6)}','Horas extras','${(he?.trabajador||he?.nombre||'').replace(/'/g,'')}','imprimirAutorizacionHE','${he?.id||''}')" style="margin-top:8px"><i class="mi sm">draw</i> Firmar (digital o escaneado)</button>
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
   } else if(id==='retiro-anticipado'){
     const tid = STATE._salidaTrab;
@@ -8845,6 +10179,7 @@ function openSheet(id){
         </div>
       ` : ''}
       <button class="btn btn-green" onclick="imprimirPermisoLaboral('${p?.id||''}')"><i class="mi sm">print</i> Imprimir / Guardar PDF</button>
+      <button class="btn btn-outline" onclick="firmarDocumentoCampo('${p?.numero||'PL-?'}','Permiso laboral','${(p?.trabajador||p?.nombre||'').replace(/'/g,'')}','imprimirPermisoLaboral','${p?.id||''}')" style="margin-top:8px"><i class="mi sm">draw</i> Firmar (digital o escaneado)</button>
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
   } else if(id==='permisos-lista'){
     const lista = (STATE.permisosLaborales||[]).slice().reverse();
@@ -9167,7 +10502,7 @@ function openSheet(id){
       <div class="alert alert-b" style="margin-top:10px"><i class="mi">info</i> <div>En producción se podrá exportar este reporte a PDF o Excel.</div></div>
       <button class="btn btn-outline" onclick="openSheet('reportes-asistencia')"><i class="mi sm">arrow_back</i> Volver a reportes</button>`;
   } else if(id==='reporte-personas'){
-    const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor');
+    const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
     // Calcular ausencias del mes para cada uno
     const datos = trabajadores.map(t => {
       const r = calcReportePersona(t.id, 30);
@@ -9269,7 +10604,7 @@ function openSheet(id){
     if (!t){html = '<div class="empty"><div class="empty-t">No encontrado</div></div>';}
     else {
       const tieneFoto = !!t.foto;
-      const esCapatazOCond = t.cargo.startsWith('Capataz') || t.cargo === 'Conductor';
+      const esCapatazOCond = t.cargo.startsWith('Jefe de campo') || t.cargo === 'Conductor';
       html = `
         <div style="text-align:center;margin-bottom:14px;padding-top:4px">
           <div style="width:80px;height:80px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;background:${t.color};color:${t.colorT};box-shadow:0 4px 14px rgba(0,0,0,.1);overflow:hidden">
@@ -9294,9 +10629,9 @@ function openSheet(id){
         </div>
 
         <div class="section-label">Documentos</div>
-        <div class="grid2" style="margin-bottom:12px">
-          <button class="btn-sm" style="background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD;padding:11px 8px;justify-content:center" onclick="imprimirFichasCSS('${t.id}')"><i class="mi sm">print</i> Ficha CSS</button>
-          <button class="btn-sm" style="background:#DCFCE7;color:#166534;border:1px solid #86EFAC;padding:11px 8px;justify-content:center" onclick="imprimirComprobantes('${t.id}')"><i class="mi sm">receipt_long</i> Comprobante</button>
+        <div style="padding:12px 14px;background:#F1F5F9;border-radius:12px;margin-bottom:12px;font-size:11.5px;color:#64748b;display:flex;align-items:flex-start;gap:8px">
+          <i class="mi sm" style="color:#94a3b8">info</i>
+          <div>Las fichas y comprobantes se reciben desde la oficina en los módulos <strong>Fichas de Seguro</strong> y <strong>Comprobantes</strong>, donde puedes imprimirlos.</div>
         </div>
 
         ${!esCapatazOCond ? `
@@ -9320,12 +10655,27 @@ function openSheet(id){
         <div class="field"><label>Nombre completo *</label><input type="text" id="nc-nombre" placeholder="Ej: Juan Pérez García"></div>
         <div class="field"><label>Cédula</label><input type="text" id="nc-cedula" placeholder="4-000-000"></div>
         <div class="field"><label>Cargo</label><select id="nc-cargo">
-          ${(STATE.config.cargos||[]).filter(c => c !== 'Capataz' && c !== 'Conductor').map(c => `<option>${c}</option>`).join('')}
+          ${(STATE.config.cargos||[]).filter(c => c !== 'Jefe de campo' && c !== 'Conductor').map(c => `<option>${c}</option>`).join('')}
         </select></div>
         <div class="field"><label>Parcela asignada</label><input type="text" id="nc-parcela" placeholder="Ej: P-05"></div>
         <div class="field"><label>Teléfono</label><input type="tel" id="nc-tel" placeholder="6000-0000"></div>
         <div class="field"><label>Fecha de ingreso</label><input type="date" id="nc-ingreso" value="${new Date().toISOString().slice(0,10)}"></div>
         <div class="field"><label>Contacto de emergencia</label><input type="text" id="nc-emerg" placeholder="Nombre y teléfono"></div>
+
+        <div class="section-label" style="margin-top:4px">Datos de salud</div>
+        <div class="field"><label>¿Sufre alguna enfermedad o condición?</label>
+          <select id="nc-tiene-enf" onchange="document.getElementById('nc-enf-detalle').style.display=this.value==='si'?'block':'none'">
+            <option value="no">No</option>
+            <option value="si">Sí</option>
+          </select>
+        </div>
+        <div class="field" id="nc-enf-detalle" style="display:none"><label>¿Cuál? (alergias, condiciones, medicamentos)</label><textarea id="nc-enfermedad" rows="2" placeholder="Ej: diabetes, hipertensión, alergia a..."></textarea></div>
+
+        <div class="section-label" style="margin-top:4px">Datos bancarios (para depósito)</div>
+        <div class="field"><label>Banco</label><input type="text" id="nc-banco" placeholder="Ej: Banco General"></div>
+        <div class="field"><label>Número de cuenta</label><input type="text" id="nc-cuenta" placeholder="Número de cuenta para depositar el salario"></div>
+        <div class="field"><label>Tipo de cuenta</label><select id="nc-tipo-cuenta"><option>Ahorro</option><option>Corriente</option></select></div>
+
         <button class="btn btn-green" onclick="agregarColaborador()"><i class="mi sm">person_add</i> Agregar colaborador</button>
         <button class="btn btn-outline" onclick="closeSheet()">Cancelar</button>
       </div>`;
@@ -9447,7 +10797,7 @@ function openSheet(id){
     tareas.forEach(t => (t.trabajadores||[]).forEach(tid => {conteo[tid]=(conteo[tid]||0)+1;}));
     // Mostrar TODOS los colaboradores (no solo los que tienen tareas)
     const todos = STATE.colaboradores
-      .filter(c => !c.cargo.startsWith('Capataz') && c.cargo !== 'Conductor')
+      .filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo !== 'Conductor')
       .map(c => ({col:c, n:conteo[c.id] || 0}))
       .sort((a,b) => b.n - a.n);
     const max = todos[0]?.n || 1;
@@ -9939,18 +11289,40 @@ function openSheet(id){
         <div class="alert alert-o"><i class="mi">info</i> <div>Aún no has registrado tu firma. Dibújala una vez y se usará automáticamente en todas las actas de entrega que crees.</div></div>
       `}
 
-      <div class="section-label">${tieneFirma ? 'Cambiar firma' : 'Dibuja tu firma'}</div>
-      <div style="background:#f5f5f0;border-radius:12px;padding:2px;margin-bottom:10px">
-        <canvas id="canvas-firma-cap" style="display:block;width:100%;border-radius:10px;touch-action:none;background:#fff"></canvas>
+      <div class="seg" style="margin-bottom:14px">
+        <button class="on" id="capf-tab-dib" onclick="capfTab('dibujar')">Dibujar firma</button>
+        <button id="capf-tab-png" onclick="capfTab('png')">Subir PNG sin fondo</button>
       </div>
-      <div style="text-align:center;font-size:10px;color:var(--fg-mut);margin-bottom:14px">Firma con el dedo o el lápiz</div>
-      <div class="flex" style="gap:8px;margin-bottom:8px">
-        <button class="btn btn-outline" style="flex:1;margin:0" onclick="limpiarFirmaCapataz()"><i class="mi sm">refresh</i> Borrar</button>
-        <button class="btn btn-green" style="flex:1;margin:0" onclick="guardarFirmaCapataz()"><i class="mi sm">check</i> Guardar firma</button>
+
+      <div id="capf-pane-dibujar">
+        <div class="section-label" style="margin-top:0">${tieneFirma ? 'Cambiar firma' : 'Dibuja tu firma'}</div>
+        <div style="background:#f5f5f0;border-radius:12px;padding:2px;margin-bottom:10px">
+          <canvas id="canvas-firma-cap" style="display:block;width:100%;border-radius:10px;touch-action:none;background:#fff"></canvas>
+        </div>
+        <div style="text-align:center;font-size:10px;color:var(--fg-mut);margin-bottom:14px">Firma con el dedo o el lápiz</div>
+        <div class="flex" style="gap:8px;margin-bottom:8px">
+          <button class="btn btn-outline" style="flex:1;margin:0" onclick="limpiarFirmaCapataz()"><i class="mi sm">refresh</i> Borrar</button>
+          <button class="btn btn-green" style="flex:1;margin:0" onclick="guardarFirmaCapataz()"><i class="mi sm">check</i> Guardar firma</button>
+        </div>
+      </div>
+
+      <div id="capf-pane-png" style="display:none">
+        <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i><div style="font-size:11.5px">Sube tu firma en imagen PNG, idealmente con fondo transparente, para que se vea limpia sobre la línea.</div></div>
+        <label style="display:block;border:2px dashed #cbd5e1;border-radius:14px;padding:24px;text-align:center;cursor:pointer;background:#fff;margin-bottom:10px">
+          <input type="file" accept="image/png,image/*" id="capf-png-file" style="display:none" onchange="capfPngSeleccionado(this)">
+          <i class="mi" style="font-size:34px;color:#94a3b8">image</i>
+          <div style="font-size:13px;font-weight:600;margin-top:6px;color:#475569">Seleccionar imagen PNG</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px" id="capf-png-nombre">Fondo transparente recomendado</div>
+        </label>
+        <div id="capf-png-prev" style="display:none;margin-bottom:12px;text-align:center;padding:14px;border:1px solid #cbd5e1;border-radius:12px;background-image:linear-gradient(45deg,#eee 25%,transparent 25%),linear-gradient(-45deg,#eee 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eee 75%),linear-gradient(-45deg,transparent 75%,#eee 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0">
+          <img id="capf-png-img" style="max-height:90px;max-width:100%">
+        </div>
+        <button class="btn btn-green" style="width:100%;margin:0 0 8px" onclick="guardarFirmaCapatazPng()"><i class="mi sm">check</i> Guardar firma PNG</button>
       </div>
       ${tieneFirma ? `<button class="btn" style="background:#FEE2E2;color:#991B1B;border:1px solid #FECACA" onclick="eliminarFirmaCapataz()"><i class="mi sm">delete</i> Eliminar firma guardada</button>` : ''}
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
     // Inicializar canvas después de render
+    _capfPngData = null;
     setTimeout(setupCanvasFirmaCapataz, 100);
   } else if(id==='personalizar-menu'){
     const mods = obtenerModulosOrdenados();
@@ -10399,6 +11771,7 @@ function openSheet(id){
         ` : ''}
 
         <button class="btn btn-green" onclick="imprimirActa('${a.id}')"><i class="mi sm">print</i> Imprimir / Guardar PDF</button>
+        <button class="btn btn-outline" onclick="firmarDocumentoCampo('${a.numero||'ACT-?'}','Acta de entrega','${(a.trabajador||a.nombre||'').replace(/'/g,'')}','imprimirActa','${a.id||''}')"><i class="mi sm">draw</i> Firmar (digital o escaneado)</button>
         <button class="btn" style="background:#FEE2E2;color:#991B1B;border:1px solid #FECACA" onclick="eliminarActa('${a.id}')"><i class="mi sm">delete</i> Eliminar acta</button>
         <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
     }
@@ -10436,7 +11809,7 @@ function openSheet(id){
         <div style="font-size:16px;font-weight:700;margin-top:10px;color:var(--fg)">Apariencia</div>
         <div style="font-size:11px;color:#94a3b8;margin-top:2px">Personalización solo para <strong>${nombreCorto}</strong></div>
       </div>
-      <div class="alert alert-b" style="margin-bottom:14px"><i class="mi">info</i> <div>Estos cambios solo afectan a tu sesión. Otros capataces tienen su propia configuración independiente.</div></div>
+      <div class="alert alert-b" style="margin-bottom:14px"><i class="mi">info</i> <div>Estos cambios solo afectan a tu sesión. Otros jefes de campo tienen su propia configuración independiente.</div></div>
 
       <div class="section-label" style="margin-top:0">Color principal</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
@@ -10640,7 +12013,7 @@ function openSheet(id){
       </div>
 
       <div style="text-align:center;margin-bottom:14px">
-        <div style="display:inline-block;background:linear-gradient(135deg,#10C97E,#0BAA68);color:#fff;padding:6px 16px;border-radius:24px;font-size:13px;font-weight:700;letter-spacing:.02em">v2.0.0</div>
+        <div style="display:inline-block;background:linear-gradient(135deg,#10C97E,#0BAA68);color:#fff;padding:6px 16px;border-radius:24px;font-size:13px;font-weight:700;letter-spacing:.02em">v2.1.0</div>
         <div style="font-size:11px;color:#94a3b8;margin-top:6px">Liberada en mayo 2026</div>
       </div>
 
@@ -10659,10 +12032,180 @@ function openSheet(id){
 
       <div style="text-align:center;font-size:10px;color:#94a3b8;margin:14px 0">© 2026 Agropecuaria Chiriquí, S.A.<br>Todos los derechos reservados.</div>
       <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
+  } else if(id==='firma-liq'){
+    const d = STATE.liquidacionesRecibidas?.documentos?.find(x=>x.id===STATE._liqFirmando) || {};
+    html=`
+      <div style="margin-bottom:12px"><div style="font-size:15px;font-weight:700;margin-bottom:3px"><i class="mi" style="vertical-align:-3px">draw</i> Firma del colaborador</div><div style="font-size:11px;color:#999">${d.tipo||'Documento'} · ${d.colaborador||''}</div></div>
+
+      <div class="seg" style="margin-bottom:14px">
+        <button class="on" id="fl-tab-dig" onclick="liqFirmaTab('digital')">Firmar digital</button>
+        <button id="fl-tab-imp" onclick="liqFirmaTab('impreso')">Imprimir y escanear</button>
+      </div>
+
+      <!-- DIGITAL -->
+      <div id="fl-pane-digital">
+        <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i><div style="font-size:11.5px">El colaborador firma directamente en la pantalla con el dedo.</div></div>
+        <div style="border:2px dashed #cbd5e1;border-radius:14px;background:#fff;margin-bottom:10px">
+          <canvas id="liq-canvas" style="width:100%;height:200px;display:block;touch-action:none;cursor:crosshair"></canvas>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-bottom:12px" onclick="limpiarFirmaLiq()"><i class="mi sm">refresh</i> Borrar firma</button>
+        <button class="btn btn-green" style="width:100%;margin:0" onclick="guardarFirmaLiq('digital')"><i class="mi sm">check</i> Guardar firma digital</button>
+      </div>
+
+      <!-- IMPRESO / ESCANEADO -->
+      <div id="fl-pane-impreso" style="display:none">
+        <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i><div style="font-size:11.5px">1) Descarga e imprime el documento. 2) El colaborador lo firma a mano. 3) Escanéalo en la impresora. 4) Carga el archivo aquí.</div></div>
+        <button class="btn btn-outline" style="width:100%;margin:0 0 10px" onclick="descargarParaImprimir('${d.id}')"><i class="mi sm">print</i> Descargar para imprimir</button>
+        <label style="display:block;border:2px dashed #cbd5e1;border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:#fff;margin-bottom:10px">
+          <input type="file" accept="application/pdf,image/*" id="liq-scan-file" style="display:none" onchange="liqEscaneoSeleccionado(this)">
+          <i class="mi" style="font-size:34px;color:#94a3b8">upload_file</i>
+          <div style="font-size:13px;font-weight:600;margin-top:6px;color:#475569">Cargar documento firmado (escaneado)</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px" id="liq-scan-nombre">PDF o foto del documento</div>
+        </label>
+        <button class="btn btn-green" style="width:100%;margin:0;opacity:.5" id="liq-btn-scan" disabled onclick="guardarFirmaLiq('escaneado')"><i class="mi sm">cloud_upload</i> Subir documento firmado</button>
+      </div>`;
+  } else if(id==='nueva-incapacidad'){
+    _incapArchivo = null;
+    const hoy = new Date().toISOString().slice(0,10);
+    const trabs = STATE.colaboradores.filter(c=>!c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
+    html=`
+      <div style="margin-bottom:14px"><div style="font-size:16px;font-weight:700"><i class="mi" style="vertical-align:-3px;color:#DC2626">medical_services</i> Registrar incapacidad</div><div style="font-size:11.5px;color:var(--fg-mut);margin-top:2px">Escanea o toma foto del certificado médico. Se enviará a la oficina.</div></div>
+      <div class="card card-body">
+        <div class="field"><label>Colaborador *</label>
+          <select id="incap-trab">
+            <option value="">Seleccionar...</option>
+            ${trabs.map(t=>`<option value="${t.id}">${t.nombre} · ${t.codigo}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Tipo de incapacidad</label>
+          <select id="incap-tipo">
+            <option>Enfermedad común</option>
+            <option>Accidente laboral</option>
+            <option>Accidente común</option>
+            <option>Maternidad</option>
+            <option>Cita / control médico</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="grid2" style="gap:10px">
+          <div class="field"><label>Desde *</label><input type="date" id="incap-desde" value="${hoy}" onchange="calcDiasIncap()"></div>
+          <div class="field"><label>Hasta *</label><input type="date" id="incap-hasta" value="${hoy}" onchange="calcDiasIncap()"></div>
+        </div>
+        <div class="field"><label>Días de incapacidad</label><input type="number" id="incap-dias" value="1" min="1" style="text-align:center;font-weight:700"></div>
+        <div class="field" style="margin-bottom:0"><label>Observación (opcional)</label><textarea id="incap-obs" rows="2" placeholder="Ej: reposo domiciliario, nombre del médico o centro..."></textarea></div>
+      </div>
+
+      <div class="section-label">Certificado médico *</div>
+      <div class="card card-body" style="text-align:center">
+        <div style="font-size:11.5px;color:var(--fg-mut);margin-bottom:10px">Toma una foto con la cámara o sube el archivo escaneado (imagen o PDF)</div>
+        <input type="file" id="incap-file" accept="image/*,application/pdf" capture="environment" onchange="incapArchivoSeleccionado(this)" style="display:none">
+        <input type="file" id="incap-file-gal" accept="image/*,application/pdf" onchange="incapArchivoSeleccionado(this)" style="display:none">
+        <div class="flex" style="gap:8px;justify-content:center">
+          <button class="btn btn-outline" style="flex:1" onclick="document.getElementById('incap-file').click()"><i class="mi sm">photo_camera</i> Tomar foto</button>
+          <button class="btn btn-outline" style="flex:1" onclick="document.getElementById('incap-file-gal').click()"><i class="mi sm">upload_file</i> Subir archivo</button>
+        </div>
+        <div id="incap-archivo-info" style="font-size:11px;color:var(--pri-2);margin-top:8px"></div>
+        <div id="incap-preview" style="display:none;margin-top:10px"></div>
+      </div>
+
+      <button class="btn btn-green" id="incap-guardar" disabled style="opacity:.5;margin-top:6px" onclick="guardarIncapacidad()"><i class="mi sm">send</i> Registrar y enviar a oficina</button>
+      <button class="btn btn-outline" onclick="closeSheet()">Cancelar</button>`;
+  } else if(id==='ver-incapacidad'){
+    const inc = (STATE.incapacidades||[]).find(x=>x.id===STATE._incapVer) || {};
+    const esPDF = (inc.archivo?.tipo||'').includes('pdf');
+    html=`
+      <div style="margin-bottom:12px"><div style="font-size:15px;font-weight:700">${inc.nombre||''}</div><div style="font-size:11px;color:#999">${inc.tipo||''} · ${inc.dias||0} día(s) · del ${inc.desde||''} al ${inc.hasta||''}</div></div>
+      <div style="background:#f8f9fa;border-radius:12px;padding:10px;max-height:60vh;overflow:auto;margin-bottom:12px">
+        ${esPDF
+          ? `<iframe src="${inc.archivo.data}" style="width:100%;height:55vh;border:0;border-radius:10px"></iframe>`
+          : `<img src="${inc.archivo?.data||''}" style="width:100%;border-radius:10px">`}
+      </div>
+      <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
+  } else if(id==='ver-liq'){
+    const did = STATE._liqVerId;
+    const d = STATE.liquidacionesRecibidas?.documentos?.find(x=>x.id===did) || {};
+    const firma = STATE.liquidacionesFirmadas?.[did];
+    const yaFirmo = !!firma;
+    html=`
+      <div style="margin-bottom:12px"><div style="font-size:15px;font-weight:700;margin-bottom:3px"><i class="mi" style="vertical-align:-3px">description</i> ${d.tipo||'Documento'}</div><div style="font-size:11px;color:#999">${d.colaborador||''}</div></div>
+      <div style="background:#f8f9fa;border-radius:12px;padding:10px;max-height:56vh;overflow:auto;margin-bottom:12px" id="verliq-doc"><div style="text-align:center;padding:30px;color:#999"><i class="mi">hourglass_empty</i> Cargando...</div></div>
+      ${yaFirmo
+        ? `<div class="alert alert-g" style="margin-bottom:12px"><i class="mi">check_circle</i><div style="font-size:11.5px">Documento firmado (${firma.modo==='digital'?'digital':firma.modo==='escaneado'?'escaneado':'impreso'}).</div></div>
+           <button class="btn btn-green" onclick="abrirVentanaImpresionComp('${(d.tipo||'').replace(/'/g,'')}', document.getElementById('verliq-doc').innerHTML)"><i class="mi sm">print</i> Imprimir / Guardar PDF</button>
+           <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`
+        : `<div class="alert alert-b" style="margin-bottom:12px"><i class="mi">menu_book</i><div style="font-size:11.5px">Lea el documento completo con el colaborador. Cuando esté de acuerdo, proceda a firmar.</div></div>
+           <button class="btn btn-green" onclick="closeSheet();abrirFirmaLiquidacion('${did}')"><i class="mi sm">draw</i> Leído, proceder a firmar</button>
+           <button class="btn btn-outline" onclick="abrirVentanaImpresionComp('${(d.tipo||'').replace(/'/g,'')}', document.getElementById('verliq-doc').innerHTML)"><i class="mi sm">print</i> Solo imprimir</button>
+           <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`}`;
+  } else if(id==='previa-doc'){
+    const doc = STATE._docFirmando || {};
+    const cont = STATE._docPreviewHtml || '';
+    html=`
+      <div style="margin-bottom:12px"><div style="font-size:15px;font-weight:700;margin-bottom:3px"><i class="mi" style="vertical-align:-3px">description</i> ${doc.tipo||'Documento'}</div><div style="font-size:11px;color:#999">${doc.colaborador||''} · ${doc.numero||''}</div></div>
+      <div style="background:#f8f9fa;border-radius:12px;padding:10px;max-height:56vh;overflow:auto;margin-bottom:12px">${cont?`<div style="background:#fff;border-radius:10px;overflow:hidden">${cont}</div>`:'<div style="text-align:center;padding:30px;color:#999"><i class="mi">description</i><div style="margin-top:6px;font-size:12px">Revise el documento antes de firmar.</div></div>'}</div>
+      <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">menu_book</i><div style="font-size:11.5px">Lea el documento completo con el colaborador. Cuando esté de acuerdo, proceda a firmar.</div></div>
+      <button class="btn btn-green" onclick="abrirFirmaDocumentoCampo()"><i class="mi sm">draw</i> Leído, proceder a firmar</button>
+      <button class="btn btn-outline" onclick="closeSheet()">Cerrar</button>`;
+  } else if(id==='firma-doc'){
+    const doc = STATE._docFirmando || {};
+    html=`
+      <div style="margin-bottom:12px"><div style="font-size:15px;font-weight:700;margin-bottom:3px"><i class="mi" style="vertical-align:-3px">draw</i> Firma del documento</div><div style="font-size:11px;color:#999">${doc.tipo||'Documento'} ${doc.numero||''} · ${doc.colaborador||''}</div></div>
+
+      <div class="seg" style="margin-bottom:14px">
+        <button class="on" id="fd-tab-dig" onclick="docFirmaTab('digital')">Firmar digital</button>
+        <button id="fd-tab-imp" onclick="docFirmaTab('impreso')">Imprimir y escanear</button>
+      </div>
+
+      <div id="fd-pane-digital">
+        <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i><div style="font-size:11.5px">El colaborador firma directamente en la pantalla.</div></div>
+        <div style="border:2px dashed #cbd5e1;border-radius:14px;background:#fff;margin-bottom:10px">
+          <canvas id="doc-canvas" style="width:100%;height:200px;display:block;touch-action:none;cursor:crosshair"></canvas>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-bottom:12px" onclick="limpiarFirmaDoc()"><i class="mi sm">refresh</i> Borrar firma</button>
+        <button class="btn btn-green" style="width:100%;margin:0" onclick="guardarFirmaDoc('digital')"><i class="mi sm">check</i> Guardar firma digital</button>
+      </div>
+
+      <div id="fd-pane-impreso" style="display:none">
+        <div class="alert alert-b" style="margin-bottom:12px"><i class="mi">info</i><div style="font-size:11.5px">1) Descarga e imprime. 2) El colaborador firma a mano. 3) Escanea. 4) Carga el archivo aquí.</div></div>
+        <button class="btn btn-outline" style="width:100%;margin:0 0 10px" onclick="descargarDocParaImprimir()"><i class="mi sm">print</i> Descargar para imprimir</button>
+        <label style="display:block;border:2px dashed #cbd5e1;border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:#fff;margin-bottom:10px">
+          <input type="file" accept="application/pdf,image/*" id="doc-scan-file" style="display:none" onchange="docEscaneoSeleccionado(this)">
+          <i class="mi" style="font-size:34px;color:#94a3b8">upload_file</i>
+          <div style="font-size:13px;font-weight:600;margin-top:6px;color:#475569">Cargar documento firmado (escaneado)</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px" id="doc-scan-nombre">PDF o foto del documento</div>
+        </label>
+        <button class="btn btn-green" style="width:100%;margin:0;opacity:.5" id="doc-btn-scan" disabled onclick="guardarFirmaDoc('escaneado')"><i class="mi sm">cloud_upload</i> Subir documento firmado</button>
+      </div>`;
   }
   c.innerHTML=html;
   document.getElementById('sheet').classList.add('on');
   document.getElementById('sheet-bg').classList.add('on');
+}
+function liqFirmaTab(modo){
+  document.getElementById('fl-pane-digital').style.display = modo==='digital'?'block':'none';
+  document.getElementById('fl-pane-impreso').style.display = modo==='impreso'?'block':'none';
+  document.getElementById('fl-tab-dig').classList.toggle('on', modo==='digital');
+  document.getElementById('fl-tab-imp').classList.toggle('on', modo==='impreso');
+  if(modo==='digital') setTimeout(()=>initCanvasFirmaLiq(),100);
+}
+function descargarParaImprimir(id){
+  const d = STATE.liquidacionesRecibidas?.documentos?.find(x=>x.id===id);
+  if(!d){toast('Documento no disponible','err');return;}
+  abrirVentanaImpresionComp(d.tipo+' · '+d.colaborador, d.html||'');
+  toast('Documento listo para imprimir','ok');
+}
+let _liqEscaneo = null;
+function liqEscaneoSeleccionado(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 6*1024*1024){toast('El archivo no debe superar 6 MB','err');return;}
+  const reader = new FileReader();
+  reader.onload = e=>{
+    _liqEscaneo = {nombre:file.name, data:e.target.result, tipo:file.type};
+    const n=document.getElementById('liq-scan-nombre'); if(n) n.textContent = file.name+' ('+(file.size/1024).toFixed(0)+' KB)';
+    const b=document.getElementById('liq-btn-scan'); if(b){b.disabled=false; b.style.opacity='1';}
+  };
+  reader.readAsDataURL(file);  // se guarda como dataURL (PDF o imagen → se transforma a archivo cargable)
 }
 function closeSheet(){
   document.getElementById('sheet').classList.remove('on');
@@ -10813,6 +12356,14 @@ document.addEventListener('pointerdown', (e) => {
 (function generarHistorialDemo(){
   // Primero intentar cargar el estado guardado
   const cargado = cargarEstado();
+  // Demostración: asignar fechas de fin de contrato a un par de colaboradores (solo si no existen)
+  (function(){
+    const enDias = (n)=>{ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+    const c1 = STATE.colaboradores.find(x=>x.id==='c04');
+    const c2 = STATE.colaboradores.find(x=>x.id==='c12');
+    if(c1 && c1.fechaFinContrato===undefined) c1.fechaFinContrato = enDias(22);
+    if(c2 && c2.fechaFinContrato===undefined) c2.fechaFinContrato = enDias(10);
+  })();
   if (cargado && Object.keys(STATE.asistenciaHist || {}).length > 30){
     // Ya hay datos históricos guardados, no regenerar
     return;
@@ -10827,8 +12378,8 @@ document.addEventListener('pointerdown', (e) => {
     if (fecha.getDay() === 0 && Math.random() < 0.7) continue;
     const fechaStr = fecha.toISOString().slice(0,10);
     const dia = {};
-    // Para cada trabajador (no capataces, no conductor)
-    const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor');
+    // Para cada trabajador (no jefes de campo, no conductor)
+    const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
     trabajadores.forEach(t => {
       const r = Math.random();
       let tipo, hora, just=false, motivo='';
@@ -10859,7 +12410,7 @@ document.addEventListener('pointerdown', (e) => {
 (function generarOperacionesDemo(){
   if (STATE.tareasHist && STATE.tareasHist.length > 0) return;
   const hoy = new Date();
-  const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Capataz') && c.cargo!=='Conductor');
+  const trabajadores = STATE.colaboradores.filter(c => !c.cargo.startsWith('Jefe de campo') && c.cargo!=='Conductor');
   const tareasArr = (STATE.tareas||[]).filter(t => t.lbl !== 'Otra (custom)').map(t => t.lbl);
   const parcelas = STATE.parcelas || ['P-01','P-02','P-03','P-04','P-05','P-06','P-07','P-08','P-09','P-10','P-11','P-12'];
   const tractores = (STATE.tractores||[]).map(t => t.id);
@@ -10941,29 +12492,6 @@ function statsTareasGlobal(rangoDias){
     porParcela[t.parcela] = (porParcela[t.parcela]||0) + 1;
   });
   return {total: lista.length, porTipo, porParcela};
-}
-// Combustible por tractor en un rango
-function statsCombustible(rangoDias){
-  const lista = STATE.combustibleHist.filter(c => fechaEnRango(c.fecha, rangoDias));
-  const porTractor = {};
-  let totalL = 0;
-  lista.forEach(c => {
-    porTractor[c.tractorId] = (porTractor[c.tractorId]||0) + c.litros;
-    totalL += c.litros;
-  });
-  return {totalL, porTractor, cnt: lista.length};
-}
-// Coyoles recolectados
-function statsCoyoles(rangoDias){
-  const lista = STATE.coyolesHist.filter(c => fechaEnRango(c.fecha, rangoDias));
-  const totalSacos = lista.reduce((a,b) => a + (b.sacos||0), 0);
-  const porParcela = {};
-  const porTrab = {};
-  lista.forEach(c => {
-    porParcela[c.parcela] = (porParcela[c.parcela]||0) + c.sacos;
-    if (c.trabajadorId) porTrab[c.trabajadorId] = (porTrab[c.trabajadorId]||0) + c.sacos;
-  });
-  return {totalSacos, cnt: lista.length, porParcela, porTrab};
 }
 </script>
 
